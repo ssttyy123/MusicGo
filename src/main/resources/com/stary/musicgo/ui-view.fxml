@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
 
-<?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.stary.musicgo.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
-
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.stary.musicgo.Controller">
+   <children>
+      <TextField id="enterBox" layoutX="259.0" layoutY="14.0" />
+      <Button id="settingButton" fx:id="settingButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onSettingButtonClick" prefHeight="23.0" prefWidth="25.0" text="setting" />
+      <Button id="serButton" layoutX="436.0" layoutY="14.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="18.0" text="search" />
+      <HBox layoutX="660.0" layoutY="14.0" prefHeight="23.0" prefWidth="63.0" spacing="13.0">
+         <children>
+            <Button id="maxButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="25.0" text="max" />
+            <Button id="closeButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="25.0" text="close" />
+         </children>
+      </HBox>
+      <HBox layoutX="301.0" layoutY="382.0" prefHeight="68.0" prefWidth="136.0" spacing="20.0">
+         <children>
+            <Button id="lastButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="23.0" text="last" />
+            <Button id="playButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="45.0" text="play" />
+            <Button id="nextButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="23.0" text="next" />
+         </children>
+      </HBox>
+      <WebView layoutY="58.0" prefHeight="316.0" prefWidth="215.0" />
+      <WebView layoutX="215.0" layoutY="58.0" prefHeight="316.0" prefWidth="523.0" />
+   </children>
+</AnchorPane>
