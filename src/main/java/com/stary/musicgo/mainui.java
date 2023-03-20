@@ -7,10 +7,15 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.File;
+import java.net.URI;
 import java.util.Objects;
 
 public class mainui extends Application {
@@ -18,9 +23,22 @@ public class mainui extends Application {
     public void start(Stage stage){
         Controller controller = new Controller();
 
+
         //FXMLLoader fxmlLoader = new FXMLLoader(mainui.class.getResource("ui-view.fxml"));
         AnchorPane pane = new AnchorPane();
         pane.setPrefSize(738.0, 450.0);
+
+        //player
+        File medfile = new File("src/main/resources/music/11582.mp3");
+        URI uri = medfile.toURI();
+        Media media = new Media(uri.toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        MediaView playerbox = new MediaView(mediaPlayer);
+        playerbox.setFitHeight(30.0);
+        playerbox.setFitWidth(30.0);
+        playerbox.setLayoutX(462.0);
+        playerbox.setLayoutY(386.0);
+        pane.getChildren().add(playerbox);
 
         //textarea
         WebView localLiset = new WebView();
@@ -42,17 +60,15 @@ public class mainui extends Application {
         settingButton.setLayoutY(14.0);
         settingButton.setPrefSize(25.0, 25.0);
         settingButton.setStyle("-fx-background-color: transparent;");
-        settingButton.setOnAction(actionEvent -> controller.onclick_close());
+        settingButton.setOnAction(actionEvent -> controller.onclick_setting());
         pane.getChildren().add(settingButton);
-        Scene scene = new Scene(pane);
-        stage.setTitle("a");
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.show();
 
 
         //ser
+        TextField enterBox = new TextField();
+        enterBox.setLayoutX(259.0);
+        enterBox.setLayoutY(14.0);
+
         Button serButton = new Button();
         ImageView serIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/search.png"))));
         serIm.setFitHeight(15.0);
@@ -61,10 +77,10 @@ public class mainui extends Application {
         serButton.setLayoutX(436.0);
         serButton.setLayoutY(14.0);
         serButton.setPrefSize(23.0, 23.0);
+        serButton.setOnAction(actionEvent -> {
+            controller.onclick_search(enterBox);
+        });
 
-        TextField enterBox = new TextField();
-        enterBox.setLayoutX(259.0);
-        enterBox.setLayoutY(14.0);
         pane.getChildren().addAll(enterBox, serButton);
 
 
@@ -95,6 +111,9 @@ public class mainui extends Application {
         playIm.setFitWidth(15.0);
         playButton.setGraphic(playIm);
         playButton.setPrefSize(45.0, 39.0);
+        playButton.setOnAction(actionEvent -> {
+            mediaPlayer.play();
+        });
 
         playBox.getChildren().addAll(lastButton, playButton, nextButton);
         pane.getChildren().add(playBox);
@@ -125,10 +144,19 @@ public class mainui extends Application {
         gencolHBox.getChildren().addAll(minButton, closeButton);
         pane.getChildren().add(gencolHBox);
 
+
+        //stage
+        Scene scene = new Scene(pane);
+        stage.setTitle("a");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.show();
+
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         launch();
     }
 }

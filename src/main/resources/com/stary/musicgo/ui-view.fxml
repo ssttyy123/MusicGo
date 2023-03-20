@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.media.*?>
 <?import javafx.scene.web.*?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.stary.musicgo.Controller">
@@ -24,5 +25,6 @@
       </HBox>
       <WebView layoutY="58.0" prefHeight="316.0" prefWidth="215.0" />
       <WebView layoutX="215.0" layoutY="58.0" prefHeight="316.0" prefWidth="523.0" />
+      <MediaView fitHeight="30.0" fitWidth="30.0" layoutX="462.0" layoutY="386.0" />
    </children>
 </AnchorPane>

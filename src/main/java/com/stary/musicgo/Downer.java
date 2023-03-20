@@ -1,14 +1,13 @@
 package com.stary.musicgo;
-//bili
+//*  bili
 
 public class Downer {
     String downerForm = new String();
-    private downAPIm bilid;
+    downAPIm dAPI;
     public Downer(String form){
         this.downerForm = form;
         if(form.equals("bili")){
-            bilid = new BilibiliDowner();
+            dAPI = new BilibiliDowner();
         }
     }
-
 }
