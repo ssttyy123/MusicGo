@@ -7,15 +7,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.File;
-import java.net.URI;
 import java.util.Objects;
 
 public class mainui extends Application {
@@ -28,17 +23,10 @@ public class mainui extends Application {
         AnchorPane pane = new AnchorPane();
         pane.setPrefSize(738.0, 450.0);
 
+
         //player
-        File medfile = new File("src/main/resources/music/11582.mp3");
-        URI uri = medfile.toURI();
-        Media media = new Media(uri.toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        MediaView playerbox = new MediaView(mediaPlayer);
-        playerbox.setFitHeight(30.0);
-        playerbox.setFitWidth(30.0);
-        playerbox.setLayoutX(462.0);
-        playerbox.setLayoutY(386.0);
-        pane.getChildren().add(playerbox);
+        AudioPlayer audioPlayer = new AudioPlayer(new StringBuilder("src/main/resources/music/test.mp3"));
+        StringBuilder wholeTime;
 
         //textarea
         WebView localLiset = new WebView();
@@ -104,6 +92,9 @@ public class mainui extends Application {
         nextIm.setFitWidth(15.0);
         nextButton.setGraphic(nextIm);
         nextButton.setPrefSize(23.0, 23.0);
+        nextButton.setOnAction(actionEvent ->{
+            System.out.println("next");
+        });
 
         Button playButton = new Button();
         ImageView playIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/play.png"))));
@@ -112,7 +103,7 @@ public class mainui extends Application {
         playButton.setGraphic(playIm);
         playButton.setPrefSize(45.0, 39.0);
         playButton.setOnAction(actionEvent -> {
-            mediaPlayer.play();
+            controller.onclick_play(audioPlayer);
         });
 
         playBox.getChildren().addAll(lastButton, playButton, nextButton);
