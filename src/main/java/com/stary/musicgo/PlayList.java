@@ -7,11 +7,22 @@ public class PlayList {
     private ArrayList<File> musicdir = new ArrayList<>();//多文件夹
     private ArrayList<File> mediaList;
     private ArrayList<File> randList;
-    File currFile = null;
+    private File currFile = null;
     private String dirURI;
     private int radcurrp = -1;
     private int ordcurrp = 0;
     private int endp = 0;
+
+    public PlayList(File defFile, String dirURI){
+        init(dirURI);
+        if(defFile == null){
+            currFile = null;
+        }
+        else {
+            currFile = defFile;
+            ordcurrp = mediaList.indexOf(defFile);
+        }
+    }
 
     public void init(String dirURI){
         try{
@@ -48,7 +59,7 @@ public class PlayList {
         this.ordcurrp = index-1;
         currFile = getNextSong();
         return currFile;
-    }
+    }//点击歌曲事件
 
     public File getLastSong(){
         if(this.ordcurrp == 0) this.ordcurrp = this.endp;
@@ -81,5 +92,13 @@ public class PlayList {
     private void randSong(){
         randList = new ArrayList<>(mediaList);
         Collections.shuffle(randList);
+    }
+
+    public String getDirURI(){
+        return dirURI;
+    }
+
+    public String getcurrMusic(){
+        return currFile.toString();
     }
 }

@@ -7,17 +7,18 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 public class mainui extends Application {
     @Override
-    public void start(Stage stage){
+    public void start(Stage stage) throws IOException {
         Controller controller = new Controller();
+        HistroySave histroySave = new HistroySave();
 
 
         //FXMLLoader fxmlLoader = new FXMLLoader(mainui.class.getResource("ui-view.fxml"));
@@ -26,21 +27,23 @@ public class mainui extends Application {
 
 
         //player
-        PlayList playList = new PlayList();
-        playList.init("D:\\project\\java\\MusicGo\\src\\main\\resources\\music\\");
-        AudioPlayer audioPlayer = new AudioPlayer(playList.rtFirst());
+        PlayList playList = new PlayList(new File(histroySave.getHistroyMusic()), histroySave.getHistroyLoaddir());
+        playList.init(histroySave.getHistroyLoaddir());
+        AudioPlayer audioPlayer = new AudioPlayer(new File(histroySave.getHistroyMusic()));
         StringBuilder wholeTime;
 
 
-        //textarea
-        WebView localLiset = new WebView();
-        localLiset.setLayoutY(58.0);
-        localLiset.setPrefSize(215.0, 316.0);
-        WebView webList = new WebView();
-        webList.setLayoutX(215.0);
-        webList.setLayoutY(58.0);
-        webList.setPrefSize(523.0, 316.0);
-        pane.getChildren().addAll(localLiset, webList);
+        //listarea
+        SplitPane listArea = new SplitPane();
+        listArea.setDividerPosition(0, 0.25);
+        listArea.setLayoutY(50.0);
+        listArea.setPrefSize(738.0, 324.0);
+
+        AnchorPane locallist = new AnchorPane();
+        AnchorPane weblist = new AnchorPane();
+
+        listArea.getItems().addAll(locallist, weblist);
+        pane.getChildren().addAll(listArea);
 
         //settingbutton
         Button settingButton = new Button();
@@ -127,7 +130,16 @@ public class mainui extends Application {
         closeIm.setFitHeight(15.0);
         closeIm.setFitWidth(15.0);
         closeButton.setGraphic(closeIm);
-        closeButton.setOnAction(e -> Platform.exit());
+        closeButton.setOnAction(e -> {
+            histroySave.setHistroyLoaddir(playList.getDirURI());
+            histroySave.setHistroyMusic(playList.getcurrMusic());
+            try {
+                histroySave.reflushJson();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            Platform.exit();
+        });
 
         Button minButton = new Button();
         ImageView minIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/minus.png"))));

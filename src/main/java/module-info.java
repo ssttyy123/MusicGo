@@ -10,6 +10,9 @@ module com.stary.musicgo {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.annotation;
 
     opens com.stary.musicgo to javafx.fxml;
     exports com.stary.musicgo;
