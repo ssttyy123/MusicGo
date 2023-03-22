@@ -3,28 +3,23 @@ package com.stary.musicgo;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+import javafx.scene.media.MediaPlayer.*;
 
 import java.io.File;
 
 public class AudioPlayer {
-    private StringBuilder uri;
-    private File mediaFile;
     private Media media;
     private MediaPlayer mediaPlayer;
     private Duration wholeTime = null;
 
-    public AudioPlayer(StringBuilder defaultUri){
-        this.uri = defaultUri;
-        mediaFile = new File(uri.toString());
-        media = new Media(this.mediaFile.toURI().toString());
+    public AudioPlayer(File defaultUri){
+        media = new Media(defaultUri.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
     }
 
-    public void changeAudioRes(StringBuilder curi){
+    public void changeAudioRes(File curi){
         destroyMedia();
-        this.uri = curi;
-        mediaFile = new File(curi.toString());
-        media = new Media(mediaFile.toURI().toString());
+        media = new Media(curi.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
     }
 
@@ -47,14 +42,22 @@ public class AudioPlayer {
     }
 
     private void destroyMedia(){
-        if(mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING){
+        if(mediaPlayer.getStatus() == Status.PLAYING){
             mediaPlayer.stop();
         }
         mediaPlayer.dispose();
         media = null;
-        mediaFile = null;
         wholeTime = null;
         System.gc();
+    }
+
+    public boolean isplay(){
+        Status status = mediaPlayer.getStatus();
+        if(status == Status.PLAYING) return true;
+        else if (status == Status.PAUSED) {
+            return false;
+        }
+        return false;
     }
 
     public String formatTime(double timeVal){

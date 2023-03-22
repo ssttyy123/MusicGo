@@ -11,6 +11,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.File;
 import java.util.Objects;
 
 public class mainui extends Application {
@@ -25,8 +26,11 @@ public class mainui extends Application {
 
 
         //player
-        AudioPlayer audioPlayer = new AudioPlayer(new StringBuilder("src/main/resources/music/test.mp3"));
+        PlayList playList = new PlayList();
+        playList.init("D:\\project\\java\\MusicGo\\src\\main\\resources\\music\\");
+        AudioPlayer audioPlayer = new AudioPlayer(playList.rtFirst());
         StringBuilder wholeTime;
+
 
         //textarea
         WebView localLiset = new WebView();
@@ -79,12 +83,26 @@ public class mainui extends Application {
         playBox.setLayoutX(301.0);
         playBox.setLayoutY(382.0);
 
+        Button playButton = new Button();
+        ImageView playIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/play.png"))));
+        playIm.setFitHeight(15.0);
+        playIm.setFitWidth(15.0);
+        playButton.setGraphic(playIm);
+        playButton.setPrefSize(45.0, 39.0);
+        playButton.setOnAction(actionEvent -> {
+            controller.onclick_play(audioPlayer, playButton);
+        });
+
         Button lastButton = new Button();
         ImageView lastIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/Previous track.png"))));
         lastIm.setFitHeight(15.0);
         lastIm.setFitWidth(15.0);
         lastButton.setGraphic(lastIm);
         lastButton.setPrefSize(23.0, 23.0);
+        lastButton.setOnAction(actionEvent -> {
+            audioPlayer.changeAudioRes(playList.getLastSong());
+            controller.onclick_other_play(audioPlayer, playButton);
+        });
 
         Button nextButton = new Button();
         ImageView nextIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/Next track.png"))));
@@ -93,18 +111,10 @@ public class mainui extends Application {
         nextButton.setGraphic(nextIm);
         nextButton.setPrefSize(23.0, 23.0);
         nextButton.setOnAction(actionEvent ->{
-            System.out.println("next");
+            audioPlayer.changeAudioRes(playList.getNextSong());
+            controller.onclick_other_play(audioPlayer, playButton);
         });
 
-        Button playButton = new Button();
-        ImageView playIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/play.png"))));
-        playIm.setFitHeight(15.0);
-        playIm.setFitWidth(15.0);
-        playButton.setGraphic(playIm);
-        playButton.setPrefSize(45.0, 39.0);
-        playButton.setOnAction(actionEvent -> {
-            controller.onclick_play(audioPlayer);
-        });
 
         playBox.getChildren().addAll(lastButton, playButton, nextButton);
         pane.getChildren().add(playBox);
