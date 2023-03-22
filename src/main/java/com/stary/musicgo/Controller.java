@@ -45,10 +45,11 @@ public class Controller{
         }
     }
 
-    public  void onclick_down(String url, String dir, String name){
+    public void onclick_down(String url, String dir, String name, PlayList playList){
         Downer downer = new Downer("bili");
-        downer.dAPI.Start(url, dir, name);
+        downer.DownStart(url, dir, name, playList);
     }
+
     public void onclick_setting(){
 
     }

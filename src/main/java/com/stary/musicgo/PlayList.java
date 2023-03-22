@@ -7,15 +7,21 @@ public class PlayList {
     private ArrayList<File> musicdir = new ArrayList<>();//多文件夹
     private ArrayList<File> mediaList;
     private ArrayList<File> randList;
+    File currFile = null;
+    private String dirURI;
     private int radcurrp = -1;
     private int ordcurrp = 0;
     private int endp = 0;
 
     public void init(String dirURI){
         try{
+            this.dirURI = dirURI;
             musicdir.add(new File(dirURI));
             mediaList = new ArrayList<File>(List.of(Objects.requireNonNull(musicdir.get(0).listFiles())));
             endp = mediaList.size()-1;
+            radcurrp = -1;
+            ordcurrp = 0;
+            if(currFile == null) currFile = rtFirst();
             randSong();
         }
         catch(NullPointerException e){
@@ -33,29 +39,43 @@ public class PlayList {
     public File getRandSong(){
         this.radcurrp++;
         if(this.radcurrp > endp) this.radcurrp=0;
-        return this.randList.get(this.radcurrp);
+        this.currFile = this.randList.get(this.radcurrp);
+        return currFile;
     }
 
 
     public File setOrderIndex(int index){
         this.ordcurrp = index-1;
-        return getNextSong();
+        currFile = getNextSong();
+        return currFile;
     }
 
     public File getLastSong(){
         if(this.ordcurrp == 0) this.ordcurrp = this.endp;
         else this.ordcurrp--;
-        return mediaList.get(this.ordcurrp);
+        currFile = mediaList.get(this.ordcurrp);
+        return currFile;
     }
 
     public File getNextSong(){
         if(this.ordcurrp == this.endp) this.ordcurrp = 0;
         else this.ordcurrp++;
-        return mediaList.get(this.ordcurrp);
+        currFile = mediaList.get(this.ordcurrp);
+        return currFile;
     }
 
     public File rtFirst(){
-        return mediaList.get(0);
+        currFile = mediaList.get(0);
+        return currFile;
+    }
+
+    public void reFlushList(){
+        musicdir = null;
+        mediaList = null;
+        randList = null;
+        System.gc();
+        init(this.dirURI);
+        this.ordcurrp = mediaList.indexOf(currFile);
     }
 
     private void randSong(){
