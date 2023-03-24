@@ -13,6 +13,7 @@ module com.stary.musicgo {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.annotation;
+    requires mp3agic;
 
     opens com.stary.musicgo to javafx.fxml;
     exports com.stary.musicgo;

@@ -11,8 +11,8 @@ public class Controller{
     public void onclick_search(TextField enterBox){
         String key = enterBox.getText();
         Downer downer = new Downer("bili");
-        File fp = new File("src/main/resources/jsonF/test.json");
-        downer.dAPI.Search(key, fp.getAbsolutePath());
+        File fp = new File("src/main/resources/jsonF/bilisearch.json");
+        downer.Search(key, fp.getAbsolutePath());
     }
 
     public void onclick_play(AudioPlayer audioPlayer, Button playb){

@@ -1,7 +1,11 @@
 package com.stary.musicgo;
 
+import com.mpatric.mp3agic.InvalidDataException;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -9,10 +13,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.atomic.LongAccumulator;
 
 public class mainui extends Application {
     @Override
@@ -30,54 +36,8 @@ public class mainui extends Application {
         PlayList playList = new PlayList(new File(histroySave.getHistroyMusic()), histroySave.getHistroyLoaddir());
         playList.init(histroySave.getHistroyLoaddir());
         AudioPlayer audioPlayer = new AudioPlayer(new File(histroySave.getHistroyMusic()));
+        ObservableList<LocalFile> localFiles = FXCollections.observableArrayList(playList.getFileList());
         StringBuilder wholeTime;
-
-
-        //listarea
-        SplitPane listArea = new SplitPane();
-        listArea.setDividerPosition(0, 0.25);
-        listArea.setLayoutY(50.0);
-        listArea.setPrefSize(738.0, 324.0);
-
-        AnchorPane locallist = new AnchorPane();
-        AnchorPane weblist = new AnchorPane();
-
-        listArea.getItems().addAll(locallist, weblist);
-        pane.getChildren().addAll(listArea);
-
-        //settingbutton
-        Button settingButton = new Button();
-        ImageView settingIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/setting.png"))));
-        settingIm.setFitHeight(15.0);
-        settingIm.setFitWidth(15.0);
-        settingButton.setGraphic(settingIm);
-        settingButton.setLayoutX(14.0);
-        settingButton.setLayoutY(14.0);
-        settingButton.setPrefSize(25.0, 25.0);
-        settingButton.setStyle("-fx-background-color: transparent;");
-        settingButton.setOnAction(actionEvent -> controller.onclick_setting());
-        pane.getChildren().add(settingButton);
-
-
-        //ser
-        TextField enterBox = new TextField();
-        enterBox.setLayoutX(259.0);
-        enterBox.setLayoutY(14.0);
-
-        Button serButton = new Button();
-        ImageView serIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/search.png"))));
-        serIm.setFitHeight(15.0);
-        serIm.setFitWidth(15.0);
-        serButton.setGraphic(serIm);
-        serButton.setLayoutX(436.0);
-        serButton.setLayoutY(14.0);
-        serButton.setPrefSize(23.0, 23.0);
-        serButton.setOnAction(actionEvent -> {
-            controller.onclick_search(enterBox);
-        });
-
-        pane.getChildren().addAll(enterBox, serButton);
-
 
         //playButton
         HBox playBox = new HBox();
@@ -121,6 +81,113 @@ public class mainui extends Application {
 
         playBox.getChildren().addAll(lastButton, playButton, nextButton);
         pane.getChildren().add(playBox);
+
+
+
+
+        //listarea
+        SplitPane listArea = new SplitPane();
+        listArea.setDividerPosition(0, 0.35);
+        listArea.setLayoutY(50.0);
+        listArea.setPrefSize(738.0, 324.0);
+
+        TableView localtable = new TableView(localFiles);
+        TableView webtable = new TableView();
+        localtable.setPrefSize(254.0, 324.0);
+        webtable.setPrefSize(254.0, 324.0);
+
+        TableColumn<LocalFile, String> tc_name = new TableColumn<LocalFile, String>("歌曲名");
+        tc_name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<LocalFile, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<LocalFile, String> param) {
+                return param.getValue().getNameProperty();
+            }
+        });
+
+        TableColumn<LocalFile, String> tc_aut = new TableColumn<LocalFile, String>("演唱者");
+        tc_aut.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<LocalFile, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<LocalFile, String> param) {
+                return param.getValue().getAutProperty();
+            }
+        });
+
+        TableColumn<LocalFile, String> tc_but = new TableColumn<LocalFile, String>("play");
+        tc_but.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<LocalFile, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<LocalFile, String> param) {
+                return param.getValue().getUriProperty();
+            }
+        });
+        tc_but.setCellFactory(new Callback<TableColumn<LocalFile, String>, TableCell<LocalFile, String>>() {
+            @Override
+            public TableCell<LocalFile, String> call(TableColumn<LocalFile, String> param) {
+                TableCell<LocalFile, String> cell = new TableCell<LocalFile, String>(){
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if(item != null && !empty){
+                            Button button = new Button("p");
+                            this.setGraphic(button);
+                            button.setOnAction(event -> {
+                                audioPlayer.changeAudioRes(playList.setFile(new File(item)));
+                                controller.onclick_other_play(audioPlayer, playButton);
+                            });
+                        }
+
+                    }
+                };
+                return cell;
+            }
+        });
+
+        localtable.getColumns().add(tc_name);
+        localtable.getColumns().add(tc_aut);
+        localtable.getColumns().add(tc_but);
+
+        AnchorPane locallist = new AnchorPane();
+        AnchorPane weblist = new AnchorPane();
+        locallist.setPrefSize(100.0, 160.0);
+        weblist.setPrefSize(100.0, 160.0);
+
+        locallist.getChildren().add(localtable);
+        weblist.getChildren().add(webtable);
+        listArea.getItems().addAll(locallist, weblist);
+        pane.getChildren().addAll(listArea);
+
+        //settingbutton
+        Button settingButton = new Button();
+        ImageView settingIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/setting.png"))));
+        settingIm.setFitHeight(15.0);
+        settingIm.setFitWidth(15.0);
+        settingButton.setGraphic(settingIm);
+        settingButton.setLayoutX(14.0);
+        settingButton.setLayoutY(14.0);
+        settingButton.setPrefSize(25.0, 25.0);
+        settingButton.setStyle("-fx-background-color: transparent;");
+        settingButton.setOnAction(actionEvent -> controller.onclick_setting());
+        pane.getChildren().add(settingButton);
+
+
+        //ser
+        TextField enterBox = new TextField();
+        enterBox.setLayoutX(259.0);
+        enterBox.setLayoutY(14.0);
+
+        Button serButton = new Button();
+        ImageView serIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/search.png"))));
+        serIm.setFitHeight(15.0);
+        serIm.setFitWidth(15.0);
+        serButton.setGraphic(serIm);
+        serButton.setLayoutX(436.0);
+        serButton.setLayoutY(14.0);
+        serButton.setPrefSize(23.0, 23.0);
+        serButton.setOnAction(actionEvent -> {
+            controller.onclick_search(enterBox);
+        });
+
+        pane.getChildren().addAll(enterBox, serButton);
 
 
         //controllerBox
