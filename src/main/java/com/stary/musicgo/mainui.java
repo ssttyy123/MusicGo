@@ -1,6 +1,5 @@
 package com.stary.musicgo;
 
-import com.mpatric.mp3agic.InvalidDataException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -18,7 +17,6 @@ import javafx.util.Callback;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.concurrent.atomic.LongAccumulator;
 
 public class mainui extends Application {
     @Override
@@ -36,7 +34,8 @@ public class mainui extends Application {
         PlayList playList = new PlayList(new File(histroySave.getHistroyMusic()), histroySave.getHistroyLoaddir());
         playList.init(histroySave.getHistroyLoaddir());
         AudioPlayer audioPlayer = new AudioPlayer(new File(histroySave.getHistroyMusic()));
-        ObservableList<LocalFile> localFiles = FXCollections.observableArrayList(playList.getFileList());
+        playList.setFile(new File(histroySave.getHistroyMusic()));
+        ObservableList<ListFileCell> localFiles = FXCollections.observableArrayList(playList.getFileList());
         StringBuilder wholeTime;
 
         //playButton
@@ -96,33 +95,33 @@ public class mainui extends Application {
         localtable.setPrefSize(254.0, 324.0);
         webtable.setPrefSize(254.0, 324.0);
 
-        TableColumn<LocalFile, String> tc_name = new TableColumn<LocalFile, String>("歌曲名");
-        tc_name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<LocalFile, String>, ObservableValue<String>>() {
+        TableColumn<ListFileCell, String> tclo_name = new TableColumn<ListFileCell, String>("歌曲名");
+        tclo_name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<LocalFile, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
                 return param.getValue().getNameProperty();
             }
         });
 
-        TableColumn<LocalFile, String> tc_aut = new TableColumn<LocalFile, String>("演唱者");
-        tc_aut.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<LocalFile, String>, ObservableValue<String>>() {
+        TableColumn<ListFileCell, String> tclo_aut = new TableColumn<ListFileCell, String>("演唱者");
+        tclo_aut.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<LocalFile, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
                 return param.getValue().getAutProperty();
             }
         });
 
-        TableColumn<LocalFile, String> tc_but = new TableColumn<LocalFile, String>("play");
-        tc_but.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<LocalFile, String>, ObservableValue<String>>() {
+        TableColumn<ListFileCell, String> tclo_but = new TableColumn<ListFileCell, String>("play");
+        tclo_but.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<LocalFile, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
                 return param.getValue().getUriProperty();
             }
         });
-        tc_but.setCellFactory(new Callback<TableColumn<LocalFile, String>, TableCell<LocalFile, String>>() {
+        tclo_but.setCellFactory(new Callback<TableColumn<ListFileCell, String>, TableCell<ListFileCell, String>>() {
             @Override
-            public TableCell<LocalFile, String> call(TableColumn<LocalFile, String> param) {
-                TableCell<LocalFile, String> cell = new TableCell<LocalFile, String>(){
+            public TableCell<ListFileCell, String> call(TableColumn<ListFileCell, String> param) {
+                TableCell<ListFileCell, String> cell = new TableCell<ListFileCell, String>(){
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -141,10 +140,61 @@ public class mainui extends Application {
                 return cell;
             }
         });
+        localtable.getColumns().add(tclo_name);
+        localtable.getColumns().add(tclo_aut);
+        localtable.getColumns().add(tclo_but);
 
-        localtable.getColumns().add(tc_name);
-        localtable.getColumns().add(tc_aut);
-        localtable.getColumns().add(tc_but);
+        TableColumn<ListFileCell, String> tcwb_name = new TableColumn<ListFileCell, String>("Songname");
+        tcwb_name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
+                return param.getValue().getNameProperty();
+            }
+        });
+
+        TableColumn<ListFileCell, String> tcwb_aut = new TableColumn<ListFileCell, String>("aut");
+        tcwb_aut.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
+                return param.getValue().getAutProperty();
+            }
+        });
+
+        TableColumn<ListFileCell, String> tcwb_uri = new TableColumn<ListFileCell, String>();
+        tcwb_uri.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
+                return param.getValue().getNameProperty();
+            }
+        });
+        tcwb_uri.setCellFactory(new Callback<TableColumn<ListFileCell, String>, TableCell<ListFileCell, String>>() {
+            @Override
+            public TableCell<ListFileCell, String> call(TableColumn<ListFileCell, String> param) {
+                TableCell<ListFileCell, String> cell = new TableCell<ListFileCell, String>(){
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if(item != null && !empty){
+                            Button button = new Button("d");
+                            this.setGraphic(button);
+                            button.setOnAction(event -> {
+                                System.out.println(param.getTableView().getItems().get(this.getIndex()).getUri());
+                                //String url, String dir, String name, String aut, PlayList playList
+                                controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(), playList.getDirURI(), item, param.getTableView().getItems().get(this.getIndex()).getAut(), playList, localtable);
+
+                            });
+                        }
+
+                    }
+                };
+                return cell;
+            }
+        });
+        webtable.getColumns().add(tcwb_name);
+        webtable.getColumns().add(tcwb_aut);
+        webtable.getColumns().add(tcwb_uri);
+
 
         AnchorPane locallist = new AnchorPane();
         AnchorPane weblist = new AnchorPane();
@@ -184,7 +234,7 @@ public class mainui extends Application {
         serButton.setLayoutY(14.0);
         serButton.setPrefSize(23.0, 23.0);
         serButton.setOnAction(actionEvent -> {
-            controller.onclick_search(enterBox);
+            controller.onclick_search(enterBox, webtable);
         });
 
         pane.getChildren().addAll(enterBox, serButton);

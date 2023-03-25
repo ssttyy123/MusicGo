@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Downer extends Thread{
     private String downerForm;
@@ -21,19 +23,20 @@ public class Downer extends Thread{
         }
     }
 
-    public void DownStart(String url, String dir, String name, PlayList playList){
-        boolean rt = dAPI.Start(url, dir, name);
+    public void DownStart(String url, String dir, String name, String aut, PlayList playList){
+        boolean rt = dAPI.Start(url, dir, name, aut);
         if(rt){
             playList.reFlushList();
+
         }
     }
 
-    public void Search(String key, String jsonpath){
-        dAPI.Search(key, jsonpath);
+    public boolean Search(String key, String jsonpath){
+        return dAPI.Search(key, jsonpath);
     }
 
-    public List<SearchList> secList() throws IOException {
-        return objectMapper.readValue(new File("src/main/resources/jsonF/bilisearch.json"), new TypeReference<List<SearchList>>(){});
+    public ObservableList<SearchList> secList() throws IOException {
+        return FXCollections.observableList(objectMapper.readValue(new File("src/main/resources/jsonF/bilisearch.json"), new TypeReference<List<SearchList>>(){}));
     }
 
 }

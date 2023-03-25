@@ -75,7 +75,7 @@ public class PlayList {
     }
 
     public void reFlushList(){
-        this.musicdir = null;
+        this.musicdir = new ArrayList<>();
         this.mediaList = null;
         this.randList = null;
         System.gc();
@@ -97,8 +97,8 @@ public class PlayList {
     }
 
     //String name, String aut, String uri
-    public List<LocalFile> getFileList() {
-        List<LocalFile> files = new ArrayList<LocalFile>();
+    public List<ListFileCell> getFileList() {
+        List<ListFileCell> files = new ArrayList<ListFileCell>();
         for (File i : this.mediaList){
             String name = i.toString().substring(i.toString().lastIndexOf("\\")+1, i.toString().lastIndexOf("."));
             String aut;
@@ -111,7 +111,7 @@ public class PlayList {
                 aut = "佚名";
             }
             String uri = i.toString();
-            files.add(new LocalFile(name, aut, uri));
+            files.add(new ListFileCell(name, aut, uri));
         }
         //for(LocalFile i : files)System.out.println(i.toString());
 

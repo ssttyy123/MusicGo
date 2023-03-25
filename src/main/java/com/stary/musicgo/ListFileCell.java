@@ -2,12 +2,12 @@ package com.stary.musicgo;
 
 import javafx.beans.property.*;
 
-public class LocalFile {
+public class ListFileCell {
     private SimpleStringProperty name = new SimpleStringProperty();
     private SimpleStringProperty aut = new SimpleStringProperty();
     private SimpleStringProperty uri = new SimpleStringProperty();
 
-    public LocalFile(String name, String aut, String uri){
+    public ListFileCell(String name, String aut, String uri){
         this.name.set(name);
         this.aut.set(aut);
         this.uri.set(uri);

@@ -3,7 +3,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.media.*?>
-<?import javafx.scene.web.*?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.stary.musicgo.Controller">
    <children>
@@ -23,8 +22,28 @@
             <Button id="nextButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="23.0" text="next" />
          </children>
       </HBox>
-      <WebView layoutY="58.0" prefHeight="316.0" prefWidth="215.0" />
-      <WebView layoutX="215.0" layoutY="58.0" prefHeight="316.0" prefWidth="523.0" />
       <MediaView fitHeight="30.0" fitWidth="30.0" layoutX="462.0" layoutY="386.0" />
+      <SplitPane dividerPositions="0.35" layoutY="50.0" prefHeight="324.0" prefWidth="738.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TableView prefHeight="322.0" prefWidth="254.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="C1" />
+                      <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+                  </TableView>
+               </children></AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TableView layoutX="-7.0" prefHeight="322.0" prefWidth="475.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="C1" />
+                      <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+                  </TableView>
+               </children></AnchorPane>
+        </items>
+      </SplitPane>
    </children>
 </AnchorPane>
