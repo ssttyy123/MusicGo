@@ -55,14 +55,14 @@ def get_url_bilibili(url, savedir, fname, aut):
         # print('下载音频中。。。')
         downFile(homeurl=url, url=audURL, name=savedir + fname + '.m4s', session=session)
         ffcmd = r'D:/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg -i ' + savedir + fname + \
-                '.m4s ' + savedir + fname + '.mp3'
+                '.m4s ' + savedir + fname + '.mp3 -loglevel quiet'
         try:
             os.system(ffcmd)
             # print('转mp3成功')
             os.remove(savedir + fname + '.m4s')
-            # setatsfile = eyed3.load(savedir + fname + '.mp3')
-            # setatsfile.tag.artist = aut
-            # setatsfile.tag.save()
+            setatsfile = eyed3.load(savedir + fname + '.mp3')
+            setatsfile.tag.artist = aut
+            setatsfile.tag.save()
         except Exception as e:
             print('Audio transfer to mp3 error')
         print('#DownOver')
@@ -114,11 +114,11 @@ def sser(order):
     surl = "https://search.bilibili.com/all?keyword=" + order
     session = requests.session()
     i = 1
-    hasbangumi = 1
+    temporder = order.lower()
     res = session.get(url=surl, headers=header, verify=False)
     _elemser = etree.HTML(res.content)
     divinfo = []
-    ruler = re.compile(order)
+    ruler = re.compile(temporder)
     if str(_elemser.xpath('//body/div[3]/div/div[2]/div[2]/div/div/div/div[1]/@class')) == "['bangumi-pgc-list i_wrapper search-all-list']":
         hasbangumi = 2
     elif str(_elemser.xpath('//body/div[3]/div/div[2]/div[2]/div/div/div/div[1]/@class')) == "['activity-game-list i_wrapper search-all-list']":
@@ -140,7 +140,8 @@ def sser(order):
         print(titleinfo)
         print(autinfo)
         print(urlinfo)
-        if ruler.search(titleinfo) and i < 20:
+        temprus = titleinfo.lower()
+        if ruler.search(temprus) and i < 20:
             print(titleinfo)
             divinfo.append({'name': titleinfo,
                             'url': urlinfo,
@@ -153,4 +154,5 @@ def sser(order):
 
 cmddown()
 # ser a D:\BilibiliDown\bili.json
-# Shots(BroilerRemix)油管原版 D:\project\java\MusicGo\src\main\resources\music\ www.bilibili.com/video/BV1yD4y1m7y5/ -暮秋廿五-
+# Shots(BroilerRemix)油管原版 D:\project\java\MusicGo\src\main\resources\music\ https://www.bilibili.com/video/BV1yD4y1m7y5/ -暮秋廿五-
+# get_url_bilibili("https://www.bilibili.com/video/BV1yD4y1m7y5/", r"D:\project\java\MusicGo\src\main\resources\music\\", "Shots(BroilerRemix)油管原版", "-暮秋廿五-")

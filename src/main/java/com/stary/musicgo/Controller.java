@@ -69,6 +69,18 @@ public class Controller{
         tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
     }
 
+    public void onclick_del(String uri, AudioPlayer audioPlayer, PlayList playList, TableView<ListFileCell> tableView){
+        if(audioPlayer.isThisPlay(uri)){
+            audioPlayer.stop();
+        }
+        File file = new File(uri);
+        if (file.isFile() && file.exists()) {
+            boolean rt = file.delete();
+        }
+        playList.reFlushList();
+        tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
+    }
+
     public void onclick_setting(){
 
     }

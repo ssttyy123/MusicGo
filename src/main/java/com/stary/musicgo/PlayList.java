@@ -104,8 +104,11 @@ public class PlayList {
             String aut;
             try {
                 Mp3File mp3File = new Mp3File(i);
-                ID3v1 idtag = mp3File.getId3v1Tag();
+                ID3v2 idtag = mp3File.getId3v2Tag();
                 aut = idtag.getArtist();
+                if(aut == null){
+                    aut = "佚名";
+                }
             }
             catch (UnsupportedTagException | InvalidDataException | NullPointerException | IOException e){
                 aut = "佚名";

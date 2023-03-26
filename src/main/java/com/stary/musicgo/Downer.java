@@ -27,7 +27,6 @@ public class Downer extends Thread{
         boolean rt = dAPI.Start(url, dir, name, aut);
         if(rt){
             playList.reFlushList();
-
         }
     }
 

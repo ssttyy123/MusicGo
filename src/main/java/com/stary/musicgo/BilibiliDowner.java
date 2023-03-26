@@ -14,7 +14,7 @@ public class BilibiliDowner implements downAPIm{
         File fp = new File("src/DownerAPI/bilibiliapi.exe");
         File diruri = new File(dir);
         String cmdt = fp.getAbsolutePath() + " down" + " https://" + url + " " + diruri.getAbsolutePath() + "\\ " + name + " " +aut;
-        System.out.println(fp.getAbsolutePath() + " down" + " https://" + url + " " + diruri.getAbsolutePath() + "\\ " + name + " " +aut);
+        //System.out.println(fp.getAbsolutePath() + " down" + " https://" + url + " " + diruri.getAbsolutePath() + "\\ " + name + " " +aut);
         Process process = null;
         int rtVal = 0;
         try {

@@ -5,10 +5,12 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -19,6 +21,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class mainui extends Application {
+    double _stg2mosx = 0.0;
+    double _stg2mosy = 0.0;
     @Override
     public void start(Stage stage) throws IOException {
         Controller controller = new Controller();
@@ -28,6 +32,34 @@ public class mainui extends Application {
         //FXMLLoader fxmlLoader = new FXMLLoader(mainui.class.getResource("ui-view.fxml"));
         AnchorPane pane = new AnchorPane();
         pane.setPrefSize(738.0, 450.0);
+        Scene scene = new Scene(pane);
+
+
+        //stage
+        stage.setTitle("MusicGo");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+
+
+        //move pane
+        AnchorPane movePane = new AnchorPane();
+        movePane.setPrefSize(738.0, 53.0);
+        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                _stg2mosx = event.getScreenX() - stage.getX();
+                _stg2mosy = event.getScreenY() - stage.getY();
+            }
+        });
+        movePane.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.setX(event.getScreenX() - _stg2mosx);
+                stage.setY(event.getScreenY() - _stg2mosy);
+            }
+        });
+        pane.getChildren().add(movePane);
 
 
         //player
@@ -36,7 +68,6 @@ public class mainui extends Application {
         AudioPlayer audioPlayer = new AudioPlayer(new File(histroySave.getHistroyMusic()));
         playList.setFile(new File(histroySave.getHistroyMusic()));
         ObservableList<ListFileCell> localFiles = FXCollections.observableArrayList(playList.getFileList());
-        StringBuilder wholeTime;
 
         //playButton
         HBox playBox = new HBox();
@@ -90,10 +121,10 @@ public class mainui extends Application {
         listArea.setLayoutY(50.0);
         listArea.setPrefSize(738.0, 324.0);
 
-        TableView localtable = new TableView(localFiles);
-        TableView webtable = new TableView();
-        localtable.setPrefSize(254.0, 324.0);
-        webtable.setPrefSize(254.0, 324.0);
+        TableView<ListFileCell> localtable = new TableView<ListFileCell>(localFiles);
+        TableView<ListFileCell> webtable = new TableView<ListFileCell>();
+        localtable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        webtable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<ListFileCell, String> tclo_name = new TableColumn<ListFileCell, String>("歌曲名");
         tclo_name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
@@ -121,23 +152,30 @@ public class mainui extends Application {
         tclo_but.setCellFactory(new Callback<TableColumn<ListFileCell, String>, TableCell<ListFileCell, String>>() {
             @Override
             public TableCell<ListFileCell, String> call(TableColumn<ListFileCell, String> param) {
-                TableCell<ListFileCell, String> cell = new TableCell<ListFileCell, String>(){
+                return new TableCell<ListFileCell, String>(){
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
 
                         if(item != null && !empty){
-                            Button button = new Button("p");
-                            this.setGraphic(button);
-                            button.setOnAction(event -> {
+                            HBox hBox = new HBox();
+                            hBox.setSpacing(10);
+                            Button playbutton = new Button("p");
+                            Button delbutton = new Button("del");
+                            playbutton.setOnAction(event -> {
                                 audioPlayer.changeAudioRes(playList.setFile(new File(item)));
                                 controller.onclick_other_play(audioPlayer, playButton);
                             });
+                            delbutton.setOnAction(event -> {
+                                controller.onclick_del(item, audioPlayer, playList, localtable);
+                            });
+
+                            hBox.getChildren().addAll(playbutton, delbutton);
+                            this.setGraphic(hBox);
                         }
 
                     }
                 };
-                return cell;
             }
         });
         localtable.getColumns().add(tclo_name);
@@ -170,7 +208,7 @@ public class mainui extends Application {
         tcwb_uri.setCellFactory(new Callback<TableColumn<ListFileCell, String>, TableCell<ListFileCell, String>>() {
             @Override
             public TableCell<ListFileCell, String> call(TableColumn<ListFileCell, String> param) {
-                TableCell<ListFileCell, String> cell = new TableCell<ListFileCell, String>(){
+                return new TableCell<ListFileCell, String>(){
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -188,7 +226,6 @@ public class mainui extends Application {
 
                     }
                 };
-                return cell;
             }
         });
         webtable.getColumns().add(tcwb_name);
@@ -196,14 +233,16 @@ public class mainui extends Application {
         webtable.getColumns().add(tcwb_uri);
 
 
-        AnchorPane locallist = new AnchorPane();
-        AnchorPane weblist = new AnchorPane();
+        StackPane locallist = new StackPane();
+        StackPane weblist = new StackPane();
         locallist.setPrefSize(100.0, 160.0);
         weblist.setPrefSize(100.0, 160.0);
 
         locallist.getChildren().add(localtable);
         weblist.getChildren().add(webtable);
         listArea.getItems().addAll(locallist, weblist);
+        localtable.prefWidthProperty().bind(locallist.widthProperty());
+        webtable.prefWidthProperty().bind(weblist.widthProperty());
         pane.getChildren().addAll(listArea);
 
         //settingbutton
@@ -275,12 +314,6 @@ public class mainui extends Application {
         pane.getChildren().add(gencolHBox);
 
 
-        //stage
-        Scene scene = new Scene(pane);
-        stage.setTitle("a");
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
 
     }

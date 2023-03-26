@@ -6,6 +6,7 @@ import javafx.util.Duration;
 import javafx.scene.media.MediaPlayer.*;
 
 import java.io.File;
+import java.util.Objects;
 
 public class AudioPlayer {
     private Media media;
@@ -69,6 +70,10 @@ public class AudioPlayer {
             if((timeVal%60) < 10) return (int)(timeVal/60) + ":0" + (int)(timeVal%60);
             else return (int)(timeVal/60) + ":" + (int)(timeVal%60);
         }
+    }
+
+    public boolean isThisPlay(String uri){
+        return Objects.equals(mediaPlayer.getMedia().getSource(), new File(uri).toURI().toString());
     }
 
 }

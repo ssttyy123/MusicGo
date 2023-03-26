@@ -45,5 +45,6 @@
                </children></AnchorPane>
         </items>
       </SplitPane>
+      <AnchorPane layoutY="-1.0" prefHeight="53.0" prefWidth="738.0" />
    </children>
 </AnchorPane>
