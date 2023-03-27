@@ -7,17 +7,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Controller{
-    public void onclick_search(TextField enterBox, TableView<ListFileCell> tableView) {
+    public void onclick_search(TextField enterBox, TableView<ListFileCell> tableView, String rootdir) {
         String key = enterBox.getText();
         Downer downer = new Downer("bili");
-        File fp = new File("src/main/resources/jsonF/bilisearch.json");
-        if(downer.Search(key, fp.getAbsolutePath())){
+        File fp = new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json");
+        if(downer.Search(key, fp.getAbsolutePath(), rootdir)){
             try{
                 ObservableList<SearchList> orlist = downer.secList();
                 List<ListFileCell> lists = new ArrayList<ListFileCell>();
@@ -33,16 +34,17 @@ public class Controller{
         }
     }
 
-    public void onclick_play(AudioPlayer audioPlayer, Button playb){
+    public void onclick_play(AudioPlayer audioPlayer, Button playb, String rootdir) throws FileNotFoundException {
         if(audioPlayer.isplay()){
-            ImageView stopIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/play.png"))));
+            //new FileInputStream(rootdir + "img/Previous track.png")
+            ImageView stopIm = new ImageView(new Image(new FileInputStream(rootdir + "img/play.png")));
             stopIm.setFitHeight(15.0);
             stopIm.setFitWidth(15.0);
             audioPlayer.stop();
             playb.setGraphic(stopIm);
         }
         else {
-            ImageView playIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/stop.png"))));
+            ImageView playIm = new ImageView(new Image(new FileInputStream(rootdir + "img/stop.png")));
             playIm.setFitHeight(15.0);
             playIm.setFitWidth(15.0);
             audioPlayer.play();
@@ -50,12 +52,12 @@ public class Controller{
         }
     }
 
-    public void onclick_other_play(AudioPlayer audioPlayer, Button playb){
+    public void onclick_other_play(AudioPlayer audioPlayer, Button playb, String rootdir) throws FileNotFoundException {
         if(audioPlayer.isplay()){
             audioPlayer.play();
         }
         else {
-            ImageView playIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/stop.png"))));
+            ImageView playIm = new ImageView(new Image(new FileInputStream(rootdir + "img/stop.png")));
             playIm.setFitHeight(15.0);
             playIm.setFitWidth(15.0);
             audioPlayer.play();
@@ -63,9 +65,9 @@ public class Controller{
         }
     }
 
-    public void onclick_down(String url, String dir, String name, String aut, PlayList playList, TableView<ListFileCell> tableView){
+    public void onclick_down(String url, String dir, String name, String aut, PlayList playList, TableView<ListFileCell> tableView, String rootdir){
         Downer downer = new Downer("bili");
-        downer.DownStart(url, dir, name, aut, playList);
+        downer.DownStart(url, dir, name, aut, playList, rootdir);
         tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
     }
 

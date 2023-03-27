@@ -16,15 +16,22 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
+import java.io.*;
+import java.nio.file.Files;
 
 public class mainui extends Application {
     double _stg2mosx = 0.0;
     double _stg2mosy = 0.0;
+    String rootdir;
+
     @Override
     public void start(Stage stage) throws IOException {
+        try{
+         rootdir = Files.readString(new File("C:/ProgramData/MusicGo/resources/init.txt").toPath());
+        }
+        catch (IOException e){
+            throw new IOException("初始化根路径失败");
+        }
         Controller controller = new Controller();
         HistroySave histroySave = new HistroySave();
 
@@ -77,35 +84,47 @@ public class mainui extends Application {
         playBox.setLayoutY(382.0);
 
         Button playButton = new Button();
-        ImageView playIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/play.png"))));
+        ImageView playIm = new ImageView(new Image(new FileInputStream(rootdir + "img/play.png")));
         playIm.setFitHeight(15.0);
         playIm.setFitWidth(15.0);
         playButton.setGraphic(playIm);
         playButton.setPrefSize(45.0, 39.0);
         playButton.setOnAction(actionEvent -> {
-            controller.onclick_play(audioPlayer, playButton);
+            try {
+                controller.onclick_play(audioPlayer, playButton, rootdir);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         Button lastButton = new Button();
-        ImageView lastIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/Previous track.png"))));
+        ImageView lastIm = new ImageView(new Image(new FileInputStream(rootdir + "img/Previous track.png")));
         lastIm.setFitHeight(15.0);
         lastIm.setFitWidth(15.0);
         lastButton.setGraphic(lastIm);
         lastButton.setPrefSize(23.0, 23.0);
         lastButton.setOnAction(actionEvent -> {
             audioPlayer.changeAudioRes(playList.getLastSong());
-            controller.onclick_other_play(audioPlayer, playButton);
+            try {
+                controller.onclick_other_play(audioPlayer, playButton, rootdir);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         Button nextButton = new Button();
-        ImageView nextIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/Next track.png"))));
+        ImageView nextIm = new ImageView(new Image(new FileInputStream(rootdir + "img/Next track.png")));
         nextIm.setFitHeight(15.0);
         nextIm.setFitWidth(15.0);
         nextButton.setGraphic(nextIm);
         nextButton.setPrefSize(23.0, 23.0);
         nextButton.setOnAction(actionEvent ->{
             audioPlayer.changeAudioRes(playList.getNextSong());
-            controller.onclick_other_play(audioPlayer, playButton);
+            try {
+                controller.onclick_other_play(audioPlayer, playButton, rootdir);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         });
 
 
@@ -153,31 +172,39 @@ public class mainui extends Application {
             @Override
             public TableCell<ListFileCell, String> call(TableColumn<ListFileCell, String> param) {
                 return new TableCell<ListFileCell, String>(){
+
+                    final HBox hBox = new HBox();
+                    final Button playbutton = new Button("p");
+                    final Button delbutton = new Button("del");
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
 
                         if(item != null && !empty){
-                            HBox hBox = new HBox();
                             hBox.setSpacing(10);
-                            Button playbutton = new Button("p");
-                            Button delbutton = new Button("del");
                             playbutton.setOnAction(event -> {
                                 audioPlayer.changeAudioRes(playList.setFile(new File(item)));
-                                controller.onclick_other_play(audioPlayer, playButton);
+                                try {
+                                    controller.onclick_other_play(audioPlayer, playButton, rootdir);
+                                } catch (FileNotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
                             });
                             delbutton.setOnAction(event -> {
                                 controller.onclick_del(item, audioPlayer, playList, localtable);
                             });
-
+                            hBox.getChildren().clear();
                             hBox.getChildren().addAll(playbutton, delbutton);
                             this.setGraphic(hBox);
                         }
-
+                        else {
+                            hBox.getChildren().clear();
+                        }
                     }
                 };
             }
         });
+
         localtable.getColumns().add(tclo_name);
         localtable.getColumns().add(tclo_aut);
         localtable.getColumns().add(tclo_but);
@@ -209,18 +236,17 @@ public class mainui extends Application {
             @Override
             public TableCell<ListFileCell, String> call(TableColumn<ListFileCell, String> param) {
                 return new TableCell<ListFileCell, String>(){
+                    final Button button = new Button("d");
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
 
                         if(item != null && !empty){
-                            Button button = new Button("d");
                             this.setGraphic(button);
                             button.setOnAction(event -> {
                                 System.out.println(param.getTableView().getItems().get(this.getIndex()).getUri());
                                 //String url, String dir, String name, String aut, PlayList playList
-                                controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(), playList.getDirURI(), item, param.getTableView().getItems().get(this.getIndex()).getAut(), playList, localtable);
-
+                                controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(), playList.getDirURI(), item, param.getTableView().getItems().get(this.getIndex()).getAut(), playList, localtable, rootdir);
                             });
                         }
 
@@ -247,7 +273,7 @@ public class mainui extends Application {
 
         //settingbutton
         Button settingButton = new Button();
-        ImageView settingIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/setting.png"))));
+        ImageView settingIm = new ImageView(new Image(new FileInputStream(rootdir + "img/setting.png")));
         settingIm.setFitHeight(15.0);
         settingIm.setFitWidth(15.0);
         settingButton.setGraphic(settingIm);
@@ -265,7 +291,7 @@ public class mainui extends Application {
         enterBox.setLayoutY(14.0);
 
         Button serButton = new Button();
-        ImageView serIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/search.png"))));
+        ImageView serIm = new ImageView(new Image(new FileInputStream(rootdir + "img/search.png")));
         serIm.setFitHeight(15.0);
         serIm.setFitWidth(15.0);
         serButton.setGraphic(serIm);
@@ -273,7 +299,7 @@ public class mainui extends Application {
         serButton.setLayoutY(14.0);
         serButton.setPrefSize(23.0, 23.0);
         serButton.setOnAction(actionEvent -> {
-            controller.onclick_search(enterBox, webtable);
+            controller.onclick_search(enterBox, webtable, rootdir);
         });
 
         pane.getChildren().addAll(enterBox, serButton);
@@ -282,7 +308,7 @@ public class mainui extends Application {
         //controllerBox
         Button closeButton = new Button();
         closeButton.setPrefSize(25.0, 23.0);
-        ImageView closeIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/close.png"))));
+        ImageView closeIm = new ImageView(new Image(new FileInputStream(rootdir + "img/close.png")));
         closeIm.setFitHeight(15.0);
         closeIm.setFitWidth(15.0);
         closeButton.setGraphic(closeIm);
@@ -298,7 +324,7 @@ public class mainui extends Application {
         });
 
         Button minButton = new Button();
-        ImageView minIm = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/minus.png"))));
+        ImageView minIm = new ImageView(new Image(new FileInputStream(rootdir + "img/minus.png")));
         minIm.setFitHeight(15.0);
         minIm.setFitWidth(15.0);
         minButton.setGraphic(minIm);

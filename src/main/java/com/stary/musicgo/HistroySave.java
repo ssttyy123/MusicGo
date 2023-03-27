@@ -9,14 +9,14 @@ import java.io.IOException;
 public class HistroySave {
     private SaveJson saveo;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final File savejson = new File("src/main/resources/jsonF/save.json");
+    private final File savejson = new File("C:/ProgramData/MusicGo/resources/jsonF/save.json");
 
     public HistroySave() throws IOException {
         write2Obj();
     }
 
     private void firstwriteObj() throws IOException {
-        saveo.initc("src/main/resources/music", "src/main/resources/music/test.mp3");
+        saveo.initc("D:/MusicGodown", "D:/MusicGodown/test.mp3");
         objectMapper.writeValue(savejson, saveo);
     }
 

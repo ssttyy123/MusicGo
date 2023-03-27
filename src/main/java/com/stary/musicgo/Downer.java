@@ -23,19 +23,19 @@ public class Downer extends Thread{
         }
     }
 
-    public void DownStart(String url, String dir, String name, String aut, PlayList playList){
-        boolean rt = dAPI.Start(url, dir, name, aut);
+    public void DownStart(String url, String dir, String name, String aut, PlayList playList, String rootdir){
+        boolean rt = dAPI.Start(url, dir, name, aut, rootdir);
         if(rt){
             playList.reFlushList();
         }
     }
 
-    public boolean Search(String key, String jsonpath){
-        return dAPI.Search(key, jsonpath);
+    public boolean Search(String key, String jsonpath, String rootdir){
+        return dAPI.Search(key, jsonpath, rootdir);
     }
 
     public ObservableList<SearchList> secList() throws IOException {
-        return FXCollections.observableList(objectMapper.readValue(new File("src/main/resources/jsonF/bilisearch.json"), new TypeReference<List<SearchList>>(){}));
+        return FXCollections.observableList(objectMapper.readValue(new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json"), new TypeReference<List<SearchList>>(){}));
     }
 
 }

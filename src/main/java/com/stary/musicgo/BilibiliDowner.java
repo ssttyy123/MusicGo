@@ -10,11 +10,10 @@ public class BilibiliDowner implements downAPIm{
     //ser key jsonpath
 
     //#DownOver
-    public boolean Start(String url, String dir, String name, String aut){
-        File fp = new File("src/DownerAPI/bilibiliapi.exe");
+    public boolean Start(String url, String dir, String name, String aut, String rootdir){
+        File fp = new File(rootdir + "DownAPI/bilibiliapi.exe");
         File diruri = new File(dir);
         String cmdt = fp.getAbsolutePath() + " down" + " https://" + url + " " + diruri.getAbsolutePath() + "\\ " + name + " " +aut;
-        //System.out.println(fp.getAbsolutePath() + " down" + " https://" + url + " " + diruri.getAbsolutePath() + "\\ " + name + " " +aut);
         Process process = null;
         int rtVal = 0;
         try {
@@ -33,8 +32,8 @@ public class BilibiliDowner implements downAPIm{
     }
 
     //#SearchOver
-    public boolean Search(String key, String jsonpath) {
-        File fp = new File("src/DownerAPI/bilibiliapi.exe");
+    public boolean Search(String key, String jsonpath, String rootdir) {
+        File fp = new File(rootdir + "DownAPI/bilibiliapi.exe");
         String cmdt = fp.getAbsolutePath() + " ser" + " " + key + " " + jsonpath;
         Process process = null;
         try {
