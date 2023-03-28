@@ -2,7 +2,6 @@ package com.stary.musicgo;
 
 import java.io.*;
 import java.lang.*;
-import java.util.Objects;
 
 public class BilibiliDowner implements downAPIm{
     //https://www.bilibili.com/video/BV1sx411A778/ D:/BilibiliDown/ music
@@ -14,7 +13,7 @@ public class BilibiliDowner implements downAPIm{
         File fp = new File(rootdir + "DownAPI/bilibiliapi.exe");
         File diruri = new File(dir);
         String cmdt = fp.getAbsolutePath() + " down" + " https://" + url + " " + diruri.getAbsolutePath() + "\\ " + name + " " +aut;
-        Process process = null;
+        Process process;
         int rtVal = 0;
         try {
             process = Runtime.getRuntime().exec(cmdt);

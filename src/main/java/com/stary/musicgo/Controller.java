@@ -15,23 +15,25 @@ import java.util.List;
 
 public class Controller{
     public void onclick_search(TextField enterBox, TableView<ListFileCell> tableView, String rootdir) {
-        String key = enterBox.getText();
-        Downer downer = new Downer("bili");
-        File fp = new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json");
-        if(downer.Search(key, fp.getAbsolutePath(), rootdir)){
-            try{
-                ObservableList<SearchList> orlist = downer.secList();
-                List<ListFileCell> lists = new ArrayList<ListFileCell>();
-                for(SearchList i : orlist){
-                    lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl()));
+        new Thread(()->{
+            String key = enterBox.getText();
+            Downer downer = new Downer("bili");
+            File fp = new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json");
+            if(downer.Search(key, fp.getAbsolutePath(), rootdir)){
+                try{
+                    ObservableList<SearchList> orlist = downer.secList();
+                    List<ListFileCell> lists = new ArrayList<ListFileCell>();
+                    for(SearchList i : orlist){
+                        lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl()));
+                    }
+                    tableView.setItems(FXCollections.observableList(lists));
                 }
-                tableView.setItems(FXCollections.observableList(lists));
+                catch (IOException e){
+                    System.out.println("loading serlist err");
+                    e.printStackTrace();
+                }
             }
-            catch (IOException e){
-                System.out.println("loading serlist err");
-                e.printStackTrace();
-            }
-        }
+        }).start();
     }
 
     public void onclick_play(AudioPlayer audioPlayer, Button playb, String rootdir) throws FileNotFoundException {
@@ -66,21 +68,26 @@ public class Controller{
     }
 
     public void onclick_down(String url, String dir, String name, String aut, PlayList playList, TableView<ListFileCell> tableView, String rootdir){
-        Downer downer = new Downer("bili");
-        downer.DownStart(url, dir, name, aut, playList, rootdir);
-        tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
+        new Thread(()->{
+            Downer downer = new Downer("bili");
+            downer.DownStart(url, dir, name, aut, playList, rootdir);
+            tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
+        }).start();
+
     }
 
     public void onclick_del(String uri, AudioPlayer audioPlayer, PlayList playList, TableView<ListFileCell> tableView){
-        if(audioPlayer.isThisPlay(uri)){
-            audioPlayer.stop();
-        }
-        File file = new File(uri);
-        if (file.isFile() && file.exists()) {
-            boolean rt = file.delete();
-        }
-        playList.reFlushList();
-        tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
+        new Thread(()->{
+            if(audioPlayer.isThisPlay(uri)){
+                audioPlayer.stop();
+            }
+            File file = new File(uri);
+            if (file.isFile() && file.exists()) {
+                boolean rt = file.delete();
+            }
+            playList.reFlushList();
+            tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
+        }).start();
     }
 
     public void onclick_setting(){

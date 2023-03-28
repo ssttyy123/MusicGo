@@ -209,39 +209,25 @@ public class mainui extends Application {
         localtable.getColumns().add(tclo_aut);
         localtable.getColumns().add(tclo_but);
 
-        TableColumn<ListFileCell, String> tcwb_name = new TableColumn<ListFileCell, String>("Songname");
-        tcwb_name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
-                return param.getValue().getNameProperty();
-            }
-        });
+        TableColumn<ListFileCell, String> tcwb_name = new TableColumn<>("Songname");
+        tcwb_name.setCellValueFactory(param -> param.getValue().getNameProperty());
 
-        TableColumn<ListFileCell, String> tcwb_aut = new TableColumn<ListFileCell, String>("aut");
-        tcwb_aut.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
-                return param.getValue().getAutProperty();
-            }
-        });
+        TableColumn<ListFileCell, String> tcwb_aut = new TableColumn<>("aut");
+        tcwb_aut.setCellValueFactory(param -> param.getValue().getAutProperty());
 
-        TableColumn<ListFileCell, String> tcwb_uri = new TableColumn<ListFileCell, String>();
-        tcwb_uri.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
-                return param.getValue().getNameProperty();
-            }
-        });
-        tcwb_uri.setCellFactory(new Callback<TableColumn<ListFileCell, String>, TableCell<ListFileCell, String>>() {
+        TableColumn<ListFileCell, String> tcwb_uri = new TableColumn<>();
+        tcwb_uri.setCellValueFactory(param -> param.getValue().getNameProperty());
+        tcwb_uri.setCellFactory(new Callback<>() {
             @Override
             public TableCell<ListFileCell, String> call(TableColumn<ListFileCell, String> param) {
-                return new TableCell<ListFileCell, String>(){
+                return new TableCell<>() {
                     final Button button = new Button("d");
+
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
 
-                        if(item != null && !empty){
+                        if (item != null && !empty) {
                             this.setGraphic(button);
                             button.setOnAction(event -> {
                                 System.out.println(param.getTableView().getItems().get(this.getIndex()).getUri());
