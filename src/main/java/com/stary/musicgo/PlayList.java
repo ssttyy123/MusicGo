@@ -3,19 +3,20 @@ package com.stary.musicgo;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
 import com.mpatric.mp3agic.*;
 
 public class PlayList {
     private ArrayList<File> musicdir = new ArrayList<>();//多文件夹
-    private ArrayList<File> mediaList;
+    private ArrayList<File> mediaList = new ArrayList<>();
     private ArrayList<File> randList;
+    private ArrayList<String> dirSave;
     private File currFile = null;
-    private String dirURI;
     private int radcurrp = -1;
     private int ordcurrp = 0;
     private int endp = 0;
 
-    public PlayList(File defFile, String dirURI){
+    public PlayList(File defFile, ArrayList<String> dirURI){
         init(dirURI);
         if(defFile == null){
             this.currFile = null;
@@ -26,11 +27,18 @@ public class PlayList {
         }
     }
 
-    public void init(String dirURI){
+    public void init(ArrayList<String> dirURI){
+        dirSave = dirURI;
+        mediaList = new ArrayList<>();
         try{
-            this.dirURI = dirURI;
-            this.musicdir.add(new File(dirURI));
-            this.mediaList = new ArrayList<File>(List.of(Objects.requireNonNull(this.musicdir.get(0).listFiles())));
+            for(String i : dirURI){
+                if(!musicdir.contains(new File(i))){
+                    this.musicdir.add(new File(i));
+                }
+            }
+            for(File i : musicdir){
+                this.mediaList.addAll(List.of(Objects.requireNonNull(i.listFiles())));
+            }
             this.endp = mediaList.size()-1;
             this.radcurrp = -1;
             this.ordcurrp = 0;
@@ -79,17 +87,13 @@ public class PlayList {
         this.mediaList = null;
         this.randList = null;
         System.gc();
-        init(this.dirURI);
+        init(this.dirSave);
         this.ordcurrp = this.mediaList.indexOf(this.currFile);
     }
 
     private void randSong(){
         this.randList = new ArrayList<>(this.mediaList);
         Collections.shuffle(this.randList);
-    }
-
-    public String getDirURI(){
-        return this.dirURI;
     }
 
     public String getcurrMusic(){

@@ -5,27 +5,31 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
+import java.awt.*;
+import java.awt.MenuItem;
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
 public class mainui extends Application {
-    double _stg2mosx = 0.0;
-    double _stg2mosy = 0.0;
-    String rootdir;
+    private double _stg2mosx = 0.0;
+    private double _stg2mosy = 0.0;
+    private String rootdir;
 
     @Override
     public void start(Stage stage) throws IOException {
+        Platform.setImplicitExit(false);
         try{
          rootdir = Files.readString(new File("C:/ProgramData/MusicGo/resources/init.txt").toPath());
         }
@@ -52,28 +56,23 @@ public class mainui extends Application {
         //move pane
         AnchorPane movePane = new AnchorPane();
         movePane.setPrefSize(738.0, 53.0);
-        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                _stg2mosx = event.getScreenX() - stage.getX();
-                _stg2mosy = event.getScreenY() - stage.getY();
-            }
+        scene.setOnMousePressed(event -> {
+            _stg2mosx = event.getScreenX() - stage.getX();
+            _stg2mosy = event.getScreenY() - stage.getY();
         });
-        movePane.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                stage.setX(event.getScreenX() - _stg2mosx);
-                stage.setY(event.getScreenY() - _stg2mosy);
-            }
+        movePane.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - _stg2mosx);
+            stage.setY(event.getScreenY() - _stg2mosy);
         });
         pane.getChildren().add(movePane);
 
 
         //player
-        PlayList playList = new PlayList(new File(histroySave.getHistroyMusic()), histroySave.getHistroyLoaddir());
-        playList.init(histroySave.getHistroyLoaddir());
-        AudioPlayer audioPlayer = new AudioPlayer(new File(histroySave.getHistroyMusic()));
-        playList.setFile(new File(histroySave.getHistroyMusic()));
+        ArrayList<String> temp = new ArrayList<String> (histroySave.getSaveo().getLocalPath());
+        PlayList playList = new PlayList(new File(histroySave.getSaveo().getPlayingMusicUri()), temp);
+        playList.init(temp);
+        AudioPlayer audioPlayer = new AudioPlayer(new File(histroySave.getSaveo().getPlayingMusicUri()));
+        playList.setFile(new File(histroySave.getSaveo().getPlayingMusicUri()));
         ObservableList<ListFileCell> localFiles = FXCollections.observableArrayList(playList.getFileList());
 
         //playButton
@@ -127,11 +126,8 @@ public class mainui extends Application {
             }
         });
 
-
         playBox.getChildren().addAll(lastButton, playButton, nextButton);
         pane.getChildren().add(playBox);
-
-
 
 
         //listarea
@@ -232,7 +228,7 @@ public class mainui extends Application {
                             button.setOnAction(event -> {
                                 System.out.println(param.getTableView().getItems().get(this.getIndex()).getUri());
                                 //String url, String dir, String name, String aut, PlayList playList
-                                controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(), playList.getDirURI(), item, param.getTableView().getItems().get(this.getIndex()).getAut(), playList, localtable, rootdir);
+                                controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(), histroySave.getSaveo().getDownerDir(), item, param.getTableView().getItems().get(this.getIndex()).getAut(), playList, localtable, rootdir);
                             });
                         }
 
@@ -258,6 +254,8 @@ public class mainui extends Application {
         pane.getChildren().addAll(listArea);
 
         //settingbutton
+        SettingStage settingStage = new SettingStage();
+        settingStage.init(histroySave, playList, localtable);
         Button settingButton = new Button();
         ImageView settingIm = new ImageView(new Image(new FileInputStream(rootdir + "img/setting.png")));
         settingIm.setFitHeight(15.0);
@@ -267,7 +265,7 @@ public class mainui extends Application {
         settingButton.setLayoutY(14.0);
         settingButton.setPrefSize(25.0, 25.0);
         settingButton.setStyle("-fx-background-color: transparent;");
-        settingButton.setOnAction(actionEvent -> controller.onclick_setting());
+        settingButton.setOnAction(actionEvent -> controller.onclick_setting(settingStage));
         pane.getChildren().add(settingButton);
 
 
@@ -291,6 +289,34 @@ public class mainui extends Application {
         pane.getChildren().addAll(enterBox, serButton);
 
 
+        //tray
+        SystemTray systemTray = SystemTray.getSystemTray();
+        java.awt.Image image = Toolkit.getDefaultToolkit().getImage(rootdir + "img/trayicon.png");
+        PopupMenu popupMenu = new PopupMenu();
+        MenuItem openItem = new MenuItem("open");
+        MenuItem closeItem = new MenuItem("close");
+        popupMenu.add(openItem);
+        popupMenu.add(closeItem);
+        TrayIcon trayIcon = new TrayIcon(image, "MusicGo", popupMenu);
+        try{
+            systemTray.add(trayIcon);
+        }
+        catch (AWTException e){
+            System.out.println("无法生成系统托盘");
+            histroySave.getSaveo().setCloseForm(1);
+            histroySave.reflushJson();
+        }
+        openItem.addActionListener(e -> {
+            Platform.runLater(stage::show);
+        });
+        closeItem.addActionListener(e -> {
+            histroySave.getSaveo().setPlayingMusicUri(playList.getcurrMusic());
+            histroySave.reflushJson();
+            systemTray.remove(trayIcon);
+            Platform.exit();
+        });
+
+
         //controllerBox
         Button closeButton = new Button();
         closeButton.setPrefSize(25.0, 23.0);
@@ -299,14 +325,15 @@ public class mainui extends Application {
         closeIm.setFitWidth(15.0);
         closeButton.setGraphic(closeIm);
         closeButton.setOnAction(e -> {
-            histroySave.setHistroyLoaddir(playList.getDirURI());
-            histroySave.setHistroyMusic(playList.getcurrMusic());
-            try {
-                histroySave.reflushJson();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            if(histroySave.getSaveo().getCloseForm() == 0){
+                stage.hide();
             }
-            Platform.exit();
+            else {
+                histroySave.getSaveo().setPlayingMusicUri(playList.getcurrMusic());
+                histroySave.reflushJson();
+                systemTray.remove(trayIcon);
+                Platform.exit();
+            }
         });
 
         Button minButton = new Button();

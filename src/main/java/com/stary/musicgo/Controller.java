@@ -90,7 +90,7 @@ public class Controller{
         }).start();
     }
 
-    public void onclick_setting(){
-
+    public void onclick_setting(SettingStage settingStage){
+        settingStage.getStage().show();
     }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 public class HistroySave {
     private SaveJson saveo;
@@ -16,7 +17,8 @@ public class HistroySave {
     }
 
     private void firstwriteObj() throws IOException {
-        saveo.initc("D:/MusicGodown", "D:/MusicGodown/test.mp3");
+        //String downerDir, String playingMusicUri, String localPath, String backgroundPath, int closeForm, int nameForm, int keyMajusculeForm, int searchReForm
+        saveo.initc("D:/MusicGodown", "D:/MusicGodown/test.mp3", List.of("D:/MusicGodown"), "null", 0, 0, 0, 0);
         objectMapper.writeValue(savejson, saveo);
     }
 
@@ -30,6 +32,7 @@ public class HistroySave {
                 }
                 firstwriteObj();
                 write2Obj();
+
             }
         }
         else {
@@ -43,29 +46,23 @@ public class HistroySave {
         }
     }
 
-    public String getHistroyMusic(){
-        return saveo.getPlayingMusicUri();
+    public SaveJson getSaveo(){
+        return saveo;
     }
 
-    public String getHistroyLoaddir(){
-        return saveo.getDownerDir();
-    }
-
-    public void setHistroyMusic(String playfile){
-        saveo.setPlayingMusicUri(playfile);
-    }
-
-    public void setHistroyLoaddir(String loaddir){
-        saveo.setDownerDir(loaddir);
-    }
-
-    public void reflushJson() throws IOException {
-        if(savejson.exists()){
-            objectMapper.writeValue(savejson, saveo);
+    public void reflushJson() {
+        try{
+            if(savejson.exists()){
+                objectMapper.writeValue(savejson, saveo);
+            }
+            else {
+                if(savejson.createNewFile()) objectMapper.writeValue(savejson, saveo);
+                else objectMapper.writeValue(savejson, saveo);
+            }
         }
-        else {
-            if(savejson.createNewFile()) objectMapper.writeValue(savejson, saveo);
-            else objectMapper.writeValue(savejson, saveo);
+        catch (IOException e){
+            e.printStackTrace();
         }
+
     }
 }

@@ -1,18 +1,30 @@
 package com.stary.musicgo;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
 
 public class SettingStage {
     private final TabPane tabPane = new TabPane();
+    private final Scene scene = new Scene(tabPane);
+    private final DirectoryChooser directoryChooser = new DirectoryChooser();
+    private final FileChooser fileChooser = new FileChooser();
 
     //常规
     private final Tab commontTab = new Tab("常规");
     private final AnchorPane commontPane = new AnchorPane();
 
     private final Label localLabel = new Label("本地储存：");
-    private final Label localPathLabel = new Label("localPath");
+    private final ListView<String> localPathList = new ListView<>();
+    private final ObservableList<String> observableList = FXCollections.observableArrayList("D:/MusicGodown");
     private final Button localBut = new Button();
 
     private final Label closeLabel = new Label("关闭主面板：");
@@ -36,7 +48,7 @@ public class SettingStage {
 
 
     //搜索
-    private final Tab searchTab = new Tab();
+    private final Tab searchTab = new Tab("搜索");
     private final AnchorPane searchPane = new AnchorPane();
 
     private final Label keyMajusculeLabel = new Label("关键字大小写敏感");
@@ -49,7 +61,7 @@ public class SettingStage {
     private final RadioButton searchRe_generic = new RadioButton("泛型匹配");
 
     //其他
-    private final Tab otherTab = new Tab();
+    private final Tab otherTab = new Tab("其他");
     private final AnchorPane otherPane = new AnchorPane();
 
     private final Label backgroundLabel = new Label("背景设置");
@@ -63,16 +75,26 @@ public class SettingStage {
     private final Stage stage = new Stage();
 
 
-    public void init(){
+    public void init(HistroySave histroySave, PlayList playList, TableView<ListFileCell> tableView){
         //常规
         localLabel.setLayoutX(22.0);
         localLabel.setLayoutY(15.0);
-        localPathLabel.setLayoutX(29.0);
-        localPathLabel.setLayoutY(35.0);
-        localPathLabel.setPrefSize(233.0, 25.0);
+        localPathList.setLayoutX(29.0);
+        localPathList.setLayoutY(35.0);
+        localPathList.setPrefSize(233.0, 25.0);
+        observableList.setAll(histroySave.getSaveo().getLocalPath());
+        localPathList.setItems(observableList);
         localBut.setLayoutX(272.0);
         localBut.setLayoutY(35.0);
         localBut.setPrefSize(25.0, 25.0);
+        localBut.setOnAction(event -> {
+            directoryChooser.setTitle("请选择本地文件夹");
+            histroySave.getSaveo().addLocalPath(directoryChooser.showDialog(stage).getAbsolutePath());
+            histroySave.reflushJson();
+            playList.init(new ArrayList<>(histroySave.getSaveo().getLocalPath()));
+            observableList.setAll(histroySave.getSaveo().getLocalPath());
+            tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
+        });
 
         closeLabel.setLayoutX(22.0);
         closeLabel.setLayoutY(70.0);
@@ -82,10 +104,25 @@ public class SettingStage {
         closeBut_close.setLayoutX(29.0);
         closeBut_close.setLayoutY(110.0);
         closeBut_close.setToggleGroup(closeGroup);
+        //  0/1   -   最小化到系统托盘/退出MusicGo
+        if(histroySave.getSaveo().getCloseForm() == 0){
+            closeBut_tohide.setSelected(true);
+        } else if (histroySave.getSaveo().getCloseForm() == 1) {
+            closeBut_close.setSelected(true);
+        }
+        closeGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            RadioButton r = (RadioButton)newValue;
+            if(r.getText().equals("最小化到系统托盘")){
+                histroySave.getSaveo().setCloseForm(0);
+            } else if (r.getText().equals("退出MusicGo")) {
+                histroySave.getSaveo().setCloseForm(1);
+            }
+            histroySave.reflushJson();
+        });
 
         commontPane.setPrefSize(200.0, 180.0);
-        commontPane.getChildren().addAll(localLabel, localPathLabel, localBut, closeLabel, closeBut_tohide, closeBut_close);
-        commontTab.setGraphic(commontPane);
+        commontPane.getChildren().addAll(localLabel, localPathList, localBut, closeLabel, closeBut_tohide, closeBut_close);
+        commontTab.setContent(commontPane);
 
         //下载
         downLabel.setLayoutX(22.0);
@@ -93,9 +130,16 @@ public class SettingStage {
         downPathLabel.setPrefSize(233.0, 25.0);
         downPathLabel.setLayoutX(29.0);
         downPathLabel.setLayoutY(35.0);
+        downPathLabel.setText(histroySave.getSaveo().getDownerDir());
         downBut.setPrefSize(25.0, 25.0);
         downBut.setLayoutX(272.0);
         downBut.setLayoutY(35.0);
+        downBut.setOnAction(event -> {
+            directoryChooser.setTitle("请选择下载文件夹");
+            histroySave.getSaveo().setDownerDir(directoryChooser.showDialog(stage).getAbsolutePath());
+            histroySave.reflushJson();
+            downPathLabel.setText(histroySave.getSaveo().getDownerDir());
+        });
 
         nameFormLabel.setLayoutX(22.0);
         nameFormLabel.setLayoutY(70.0);
@@ -108,16 +152,29 @@ public class SettingStage {
         nameForm_song.setLayoutX(29.0);
         nameForm_song.setLayoutY(130.0);
         nameForm_song.setToggleGroup(nameFormGroup);
+        //歌手-歌曲名/歌曲名-歌手/歌曲名 -- 0/1/2
+        nameFormGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            RadioButton r = (RadioButton)newValue;
+            if(r.getText().equals("歌手-歌曲名")){
+                histroySave.getSaveo().setNameForm(0);
+            } else if (r.getText().equals("歌曲名-歌手")) {
+                histroySave.getSaveo().setNameForm(1);
+            } else if (r.getText().equals("歌曲名")) {
+                histroySave.getSaveo().setNameForm(2);
+            }
+            histroySave.reflushJson();
+        });
 
         downPane.setPrefSize(200.0, 180.0);
         downPane.getChildren().addAll(downLabel, downPathLabel, downBut, nameFormLabel, nameForm_singer2song, nameForm_song2singer, nameForm_song);
-        downTab.setGraphic(downPane);
+        downTab.setContent(downPane);
 
         //搜索
         keyMajusculeLabel.setLayoutX(22.0);
         keyMajusculeLabel.setLayoutY(15.0);
         keyMajusculeCheckBox.setLayoutX(29.0);
         keyMajusculeCheckBox.setLayoutY(35.0);
+        //区分大小写
 
         searchReLabel.setLayoutX(22.0);
         searchReLabel.setLayoutY(70.0);
@@ -133,7 +190,7 @@ public class SettingStage {
 
         searchPane.setPrefSize(220.0, 180.0);
         searchPane.getChildren().addAll(keyMajusculeLabel, keyMajusculeCheckBox, searchReLabel, searchRe_complete, searchRe_part, searchRe_generic);
-        searchTab.setGraphic(searchPane);
+        searchTab.setContent(searchPane);
 
         //其他
         backgroundLabel.setLayoutX(22.0);
@@ -141,12 +198,19 @@ public class SettingStage {
         backgroundPath.setPrefSize(233.0, 25.0);
         backgroundPath.setLayoutX(29.0);
         backgroundPath.setLayoutY(35.0);
+        backgroundPath.setText(histroySave.getSaveo().getBackgroundPath());
         backgroundBut.setPrefSize(25.0, 25.0);
         backgroundBut.setLayoutX(272.0);
         backgroundBut.setLayoutY(35.0);
+        backgroundBut.setOnAction(event -> {
+            fileChooser.setTitle("请选择背景");
+            histroySave.getSaveo().setBackgroundPath(fileChooser.showOpenDialog(stage).getAbsolutePath());
+            histroySave.reflushJson();
+            backgroundPath.setText(histroySave.getSaveo().getBackgroundPath());
+        });
 
         aboutLabel.setLayoutX(22.0);
-        aboutLabel.setLayoutY(15.0);
+        aboutLabel.setLayoutY(70.0);
         UIdesigner.setPrefSize(233.0, 25.0);
         UIdesigner.setLayoutX(29.0);
         UIdesigner.setLayoutY(90.0);
@@ -156,7 +220,13 @@ public class SettingStage {
 
         otherPane.setPrefSize(200.0, 180.0);
         otherPane.getChildren().addAll(backgroundLabel, backgroundPath, backgroundBut, aboutLabel, UIdesigner, APPdesigner);
-        otherTab.setGraphic(otherPane);
+        otherTab.setContent(otherPane);
+
+
+        tabPane.setPrefSize(600.0, 400.0);
+        tabPane.getTabs().addAll(commontTab, downTab, searchTab, otherTab);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
     }
 
     public Stage getStage() {
