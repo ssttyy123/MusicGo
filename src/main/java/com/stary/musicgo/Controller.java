@@ -67,13 +67,9 @@ public class Controller{
         }
     }
 
-    public void onclick_down(String url, String dir, String name, String aut, PlayList playList, TableView<ListFileCell> tableView, String rootdir){
-        new Thread(()->{
+    public void onclick_down(String url, String dir, String name, String aut, PlayList playList, TableView<ListFileCell> tableView, String rootdir, DownUI downUI){
             Downer downer = new Downer("bili");
-            downer.DownStart(url, dir, name, aut, playList, rootdir);
-            tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
-        }).start();
-
+            downer.sureDown(url, dir, name, aut, playList, rootdir, downUI, tableView);
     }
 
     public void onclick_del(String uri, AudioPlayer audioPlayer, PlayList playList, TableView<ListFileCell> tableView){

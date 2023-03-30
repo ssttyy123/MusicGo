@@ -68,19 +68,22 @@ public class mainui extends Application {
 
 
         //player
-        ArrayList<String> temp = new ArrayList<String> (histroySave.getSaveo().getLocalPath());
+        ArrayList<String> temp = new ArrayList<>(histroySave.getSaveo().getLocalPath());
         PlayList playList = new PlayList(new File(histroySave.getSaveo().getPlayingMusicUri()), temp);
         playList.init(temp);
         AudioPlayer audioPlayer = new AudioPlayer(new File(histroySave.getSaveo().getPlayingMusicUri()));
         playList.setFile(new File(histroySave.getSaveo().getPlayingMusicUri()));
         ObservableList<ListFileCell> localFiles = FXCollections.observableArrayList(playList.getFileList());
 
+        pane.getChildren().addAll(audioPlayer.getStartLabel(), audioPlayer.getPlaySlider(), audioPlayer.getEndLabel());
+
+
         //playButton
         HBox playBox = new HBox();
         playBox.setSpacing(20.0);
-        playBox.setPrefSize(136.0, 68.0);
+        playBox.setPrefSize(136.0, 46.0);
         playBox.setLayoutX(301.0);
-        playBox.setLayoutY(382.0);
+        playBox.setLayoutY(402.0);
 
         Button playButton = new Button();
         ImageView playIm = new ImageView(new Image(new FileInputStream(rootdir + "img/play.png")));
@@ -91,6 +94,7 @@ public class mainui extends Application {
         playButton.setOnAction(actionEvent -> {
             try {
                 controller.onclick_play(audioPlayer, playButton, rootdir);
+                audioPlayer.setPlayForm(playList, controller, playButton, rootdir, audioPlayer);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -106,6 +110,7 @@ public class mainui extends Application {
             audioPlayer.changeAudioRes(playList.getLastSong());
             try {
                 controller.onclick_other_play(audioPlayer, playButton, rootdir);
+                audioPlayer.setPlayForm(playList, controller, playButton, rootdir, audioPlayer);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -121,6 +126,7 @@ public class mainui extends Application {
             audioPlayer.changeAudioRes(playList.getNextSong());
             try {
                 controller.onclick_other_play(audioPlayer, playButton, rootdir);
+                audioPlayer.setPlayForm(playList, controller, playButton, rootdir, audioPlayer);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -140,6 +146,7 @@ public class mainui extends Application {
         TableView<ListFileCell> webtable = new TableView<ListFileCell>();
         localtable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         webtable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        DownUI downUI = new DownUI();
 
         TableColumn<ListFileCell, String> tclo_name = new TableColumn<ListFileCell, String>("歌曲名");
         tclo_name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
@@ -182,6 +189,7 @@ public class mainui extends Application {
                                 audioPlayer.changeAudioRes(playList.setFile(new File(item)));
                                 try {
                                     controller.onclick_other_play(audioPlayer, playButton, rootdir);
+                                    audioPlayer.setPlayForm(playList, controller, playButton, rootdir, audioPlayer);
                                 } catch (FileNotFoundException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -228,7 +236,10 @@ public class mainui extends Application {
                             button.setOnAction(event -> {
                                 System.out.println(param.getTableView().getItems().get(this.getIndex()).getUri());
                                 //String url, String dir, String name, String aut, PlayList playList
-                                controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(), histroySave.getSaveo().getDownerDir(), item, param.getTableView().getItems().get(this.getIndex()).getAut(), playList, localtable, rootdir);
+                                controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(),
+                                        histroySave.getSaveo().getDownerDir(),
+                                        item, param.getTableView().getItems().get(this.getIndex()).getAut(),
+                                        playList, localtable, rootdir, downUI);
                             });
                         }
 
