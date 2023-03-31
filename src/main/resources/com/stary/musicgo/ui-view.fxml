@@ -1,33 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.media.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.stary.musicgo.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.stary.musicgo.Controller">
    <children>
-      <TextField id="enterBox" layoutX="259.0" layoutY="14.0" />
-      <Button id="settingButton" fx:id="settingButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onSettingButtonClick" prefHeight="23.0" prefWidth="25.0" text="setting" />
-      <Button id="serButton" layoutX="436.0" layoutY="14.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="18.0" text="search" />
-      <HBox layoutX="660.0" layoutY="14.0" prefHeight="23.0" prefWidth="63.0" spacing="13.0">
-         <children>
-            <Button id="maxButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="25.0" text="max" />
-            <Button id="closeButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="25.0" text="close" />
-         </children>
-      </HBox>
-      <HBox layoutX="301.0" layoutY="402.0" prefHeight="46.0" prefWidth="136.0" spacing="20.0">
-         <children>
-            <Button id="lastButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="23.0" text="last" />
-            <Button id="playButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="45.0" text="play" />
-            <Button id="nextButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="23.0" text="next" />
-         </children>
-      </HBox>
-      <MediaView fitHeight="30.0" fitWidth="30.0" layoutX="462.0" layoutY="386.0" />
-      <SplitPane dividerPositions="0.35" layoutY="50.0" prefHeight="324.0" prefWidth="738.0">
+      <TextField id="enterBox" layoutX="265.0" layoutY="20.0" prefHeight="25.0" prefWidth="150.0" />
+      <Button id="settingButton" fx:id="settingButton" layoutX="760.0" layoutY="17.5" mnemonicParsing="false" onAction="#onSettingButtonClick" prefHeight="30.0" prefWidth="30.0" text="setting" />
+      <Button id="serButton" layoutX="430.0" layoutY="17.5" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" text="search" />
+      <Button id="maxButton" layoutX="895.0" layoutY="15.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="min" />
+      <Button id="closeButton" layoutX="950.0" layoutY="15.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="close" />
+      <SplitPane dividerPositions="0.35" layoutY="70.0" prefHeight="450.0" prefWidth="1000.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <TableView prefHeight="322.0" prefWidth="254.0">
+                  <TableView prefHeight="449.0" prefWidth="346.0">
                     <columns>
                       <TableColumn prefWidth="75.0" text="C1" />
                       <TableColumn prefWidth="75.0" text="C2" />
@@ -36,7 +29,7 @@
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <TableView layoutX="-7.0" prefHeight="322.0" prefWidth="475.0">
+                  <TableView layoutX="-7.0" prefHeight="449.0" prefWidth="654.0">
                     <columns>
                       <TableColumn prefWidth="75.0" text="C1" />
                       <TableColumn prefWidth="75.0" text="C2" />
@@ -45,9 +38,11 @@
                </children></AnchorPane>
         </items>
       </SplitPane>
-      <AnchorPane layoutY="-1.0" prefHeight="53.0" prefWidth="738.0" />
-      <Slider layoutX="80.0" layoutY="380.0" prefHeight="14.0" prefWidth="580.0" />
-      <Label layoutX="30.0" layoutY="380.0" text="start" />
-      <Label layoutX="680.0" layoutY="380.0" text="end" />
+      <Slider layoutX="150.0" layoutY="580.0" prefHeight="15.0" prefWidth="700.0" />
+      <Label layoutX="110.0" layoutY="580.0" prefHeight="15.0" text="start" />
+      <Label layoutX="860.0" layoutY="580.0" prefHeight="15.0" text="end" />
+      <Button id="lastButton" layoutX="410.0" layoutY="530.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" text="last" />
+      <Button id="nextButton" layoutX="550.0" layoutY="530.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" text="next" />
+      <Button id="playButton" layoutX="475.0" layoutY="525.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" text="play" />
    </children>
 </AnchorPane>

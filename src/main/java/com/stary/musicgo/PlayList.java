@@ -11,7 +11,7 @@ public class PlayList {
     private ArrayList<File> mediaList = new ArrayList<>();
     private ArrayList<File> randList;
     private ArrayList<String> dirSave;
-    private File currFile = null;
+    private File currFile;
     private int radcurrp = -1;
     private int ordcurrp = 0;
     private int endp = 0;
@@ -102,7 +102,7 @@ public class PlayList {
 
     //String name, String aut, String uri
     public List<ListFileCell> getFileList() {
-        List<ListFileCell> files = new ArrayList<ListFileCell>();
+        List<ListFileCell> files = new ArrayList<>();
         for (File i : this.mediaList){
             String name = i.toString().substring(i.toString().lastIndexOf("\\")+1, i.toString().lastIndexOf("."));
             String aut;

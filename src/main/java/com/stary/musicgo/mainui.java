@@ -2,9 +2,9 @@ package com.stary.musicgo;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -32,18 +32,34 @@ public class mainui extends Application {
         Platform.setImplicitExit(false);
         try{
          rootdir = Files.readString(new File("C:/ProgramData/MusicGo/resources/init.txt").toPath());
+         //D:/project/java/MusicGo/out/artifacts/MusicGo_jar/
         }
         catch (IOException e){
             throw new IOException("初始化根路径失败");
         }
+        File mainUIcss = new File(rootdir + "css/mainUI.css");
         Controller controller = new Controller();
-        HistroySave histroySave = new HistroySave();
+        HistroySave histroySave = new HistroySave(rootdir);
 
 
         //FXMLLoader fxmlLoader = new FXMLLoader(mainui.class.getResource("ui-view.fxml"));
         AnchorPane pane = new AnchorPane();
-        pane.setPrefSize(738.0, 450.0);
+        pane.setId("mainPane");
         Scene scene = new Scene(pane);
+        scene.getStylesheets().add(mainUIcss.toURI().toString());
+        Image paneImage = new Image(new File(histroySave.getSaveo().getBackgroundPath()).toURI().toString());
+        BackgroundSize panesize = new BackgroundSize(BackgroundSize.AUTO,
+                BackgroundSize.AUTO,
+                false,
+                false,
+                true,
+                true);
+        BackgroundImage backgroundImage = new BackgroundImage(paneImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                panesize);
+        pane.setBackground(new Background(backgroundImage));
 
 
         //stage
@@ -55,7 +71,7 @@ public class mainui extends Application {
 
         //move pane
         AnchorPane movePane = new AnchorPane();
-        movePane.setPrefSize(738.0, 53.0);
+        movePane.setId("movePane");
         scene.setOnMousePressed(event -> {
             _stg2mosx = event.getScreenX() - stage.getX();
             _stg2mosy = event.getScreenY() - stage.getY();
@@ -79,18 +95,14 @@ public class mainui extends Application {
 
 
         //playButton
-        HBox playBox = new HBox();
-        playBox.setSpacing(20.0);
-        playBox.setPrefSize(136.0, 46.0);
-        playBox.setLayoutX(301.0);
-        playBox.setLayoutY(402.0);
-
         Button playButton = new Button();
+        playButton.setId("playButton");
+        playButton.setLayoutX(475);
+        playButton.setLayoutY(525);
         ImageView playIm = new ImageView(new Image(new FileInputStream(rootdir + "img/play.png")));
         playIm.setFitHeight(15.0);
         playIm.setFitWidth(15.0);
         playButton.setGraphic(playIm);
-        playButton.setPrefSize(45.0, 39.0);
         playButton.setOnAction(actionEvent -> {
             try {
                 controller.onclick_play(audioPlayer, playButton, rootdir);
@@ -101,11 +113,13 @@ public class mainui extends Application {
         });
 
         Button lastButton = new Button();
+        lastButton.setId("lastButton");
+        lastButton.setLayoutX(410);
+        lastButton.setLayoutY(530);
         ImageView lastIm = new ImageView(new Image(new FileInputStream(rootdir + "img/Previous track.png")));
         lastIm.setFitHeight(15.0);
         lastIm.setFitWidth(15.0);
         lastButton.setGraphic(lastIm);
-        lastButton.setPrefSize(23.0, 23.0);
         lastButton.setOnAction(actionEvent -> {
             audioPlayer.changeAudioRes(playList.getLastSong());
             try {
@@ -117,11 +131,13 @@ public class mainui extends Application {
         });
 
         Button nextButton = new Button();
+        nextButton.setId("nextButton");
+        nextButton.setLayoutX(550);
+        nextButton.setLayoutY(530);
         ImageView nextIm = new ImageView(new Image(new FileInputStream(rootdir + "img/Next track.png")));
         nextIm.setFitHeight(15.0);
         nextIm.setFitWidth(15.0);
         nextButton.setGraphic(nextIm);
-        nextButton.setPrefSize(23.0, 23.0);
         nextButton.setOnAction(actionEvent ->{
             audioPlayer.changeAudioRes(playList.getNextSong());
             try {
@@ -132,59 +148,72 @@ public class mainui extends Application {
             }
         });
 
-        playBox.getChildren().addAll(lastButton, playButton, nextButton);
-        pane.getChildren().add(playBox);
+        pane.getChildren().addAll(lastButton, playButton, nextButton);
 
 
         //listarea
         SplitPane listArea = new SplitPane();
         listArea.setDividerPosition(0, 0.35);
-        listArea.setLayoutY(50.0);
-        listArea.setPrefSize(738.0, 324.0);
+        listArea.setId("listArea");
+        listArea.setLayoutX(0);
+        listArea.setLayoutY(70);
 
-        TableView<ListFileCell> localtable = new TableView<ListFileCell>(localFiles);
-        TableView<ListFileCell> webtable = new TableView<ListFileCell>();
+        TableView<ListFileCell> localtable = new TableView<>(localFiles){
+            @Override
+            protected void layoutChildren() {
+                super.layoutChildren();
+
+                ScrollBar scrollBar = (ScrollBar) queryAccessibleAttribute(AccessibleAttribute.HORIZONTAL_SCROLLBAR);
+                if (scrollBar != null && scrollBar.isVisible()) {
+                    scrollBar.setPrefHeight(0);
+                    scrollBar.setMaxHeight(0);
+                    scrollBar.setOpacity(1);
+                    scrollBar.setVisible(false);
+                }
+            }
+        };
+        TableView<ListFileCell> webtable = new TableView<>(){
+            @Override
+            protected void layoutChildren() {
+                super.layoutChildren();
+
+                ScrollBar scrollBar = (ScrollBar) queryAccessibleAttribute(AccessibleAttribute.HORIZONTAL_SCROLLBAR);
+                if (scrollBar != null && scrollBar.isVisible()) {
+                    scrollBar.setPrefHeight(0);
+                    scrollBar.setMaxHeight(0);
+                    scrollBar.setOpacity(1);
+                    scrollBar.setVisible(false);
+                }
+            }
+        };
         localtable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         webtable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         DownUI downUI = new DownUI();
 
-        TableColumn<ListFileCell, String> tclo_name = new TableColumn<ListFileCell, String>("歌曲名");
-        tclo_name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
-                return param.getValue().getNameProperty();
-            }
-        });
+        TableColumn<ListFileCell, String> tclo_name = new TableColumn<>("歌曲名");
+        tclo_name.setCellValueFactory(param -> param.getValue().getNameProperty());
 
-        TableColumn<ListFileCell, String> tclo_aut = new TableColumn<ListFileCell, String>("演唱者");
-        tclo_aut.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
-                return param.getValue().getAutProperty();
-            }
-        });
+        TableColumn<ListFileCell, String> tclo_aut = new TableColumn<>("演唱者");
+        tclo_aut.setCellValueFactory(param -> param.getValue().getAutProperty());
 
-        TableColumn<ListFileCell, String> tclo_but = new TableColumn<ListFileCell, String>("play");
-        tclo_but.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ListFileCell, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<ListFileCell, String> param) {
-                return param.getValue().getUriProperty();
-            }
-        });
-        tclo_but.setCellFactory(new Callback<TableColumn<ListFileCell, String>, TableCell<ListFileCell, String>>() {
+        TableColumn<ListFileCell, String> tclo_but = new TableColumn<>("play");
+        tclo_but.setCellValueFactory(param -> param.getValue().getUriProperty());
+        tclo_but.setCellFactory(new Callback<>() {
             @Override
             public TableCell<ListFileCell, String> call(TableColumn<ListFileCell, String> param) {
-                return new TableCell<ListFileCell, String>(){
+                return new TableCell<>() {
 
                     final HBox hBox = new HBox();
                     final Button playbutton = new Button("p");
                     final Button delbutton = new Button("del");
+
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
 
-                        if(item != null && !empty){
+                        if (item != null && !empty) {
                             hBox.setSpacing(10);
+                            hBox.setStyle("-fx-background-color: transparent");
                             playbutton.setOnAction(event -> {
                                 audioPlayer.changeAudioRes(playList.setFile(new File(item)));
                                 try {
@@ -194,19 +223,17 @@ public class mainui extends Application {
                                     throw new RuntimeException(e);
                                 }
                             });
-                            delbutton.setOnAction(event -> {
-                                controller.onclick_del(item, audioPlayer, playList, localtable);
-                            });
+                            delbutton.setOnAction(event -> controller.onclick_del(item, audioPlayer, playList, localtable));
                             hBox.getChildren().clear();
                             hBox.getChildren().addAll(playbutton, delbutton);
                             this.setGraphic(hBox);
-                        }
-                        else {
+                        } else {
                             hBox.getChildren().clear();
                         }
                     }
                 };
             }
+
         });
 
         localtable.getColumns().add(tclo_name);
@@ -254,8 +281,8 @@ public class mainui extends Application {
 
         StackPane locallist = new StackPane();
         StackPane weblist = new StackPane();
-        locallist.setPrefSize(100.0, 160.0);
-        weblist.setPrefSize(100.0, 160.0);
+        locallist.setStyle("-fx-background-color: transparent");
+        weblist.setStyle("-fx-background-color: transparent");
 
         locallist.getChildren().add(localtable);
         weblist.getChildren().add(webtable);
@@ -266,36 +293,34 @@ public class mainui extends Application {
 
         //settingbutton
         SettingStage settingStage = new SettingStage();
-        settingStage.init(histroySave, playList, localtable);
+        settingStage.init(histroySave, playList, localtable, pane, rootdir);
         Button settingButton = new Button();
+        settingButton.setId("settingButton");
+        settingButton.setLayoutX(760);
+        settingButton.setLayoutY(17.5);
         ImageView settingIm = new ImageView(new Image(new FileInputStream(rootdir + "img/setting.png")));
         settingIm.setFitHeight(15.0);
         settingIm.setFitWidth(15.0);
         settingButton.setGraphic(settingIm);
-        settingButton.setLayoutX(14.0);
-        settingButton.setLayoutY(14.0);
-        settingButton.setPrefSize(25.0, 25.0);
-        settingButton.setStyle("-fx-background-color: transparent;");
         settingButton.setOnAction(actionEvent -> controller.onclick_setting(settingStage));
         pane.getChildren().add(settingButton);
 
 
         //ser
         TextField enterBox = new TextField();
-        enterBox.setLayoutX(259.0);
-        enterBox.setLayoutY(14.0);
+        enterBox.setId("enterBox");
+        enterBox.setLayoutX(265);
+        enterBox.setLayoutY(20);
 
         Button serButton = new Button();
+        serButton.setId("serButton");
+        serButton.setLayoutX(430);
+        serButton.setLayoutY(17.5);
         ImageView serIm = new ImageView(new Image(new FileInputStream(rootdir + "img/search.png")));
         serIm.setFitHeight(15.0);
         serIm.setFitWidth(15.0);
         serButton.setGraphic(serIm);
-        serButton.setLayoutX(436.0);
-        serButton.setLayoutY(14.0);
-        serButton.setPrefSize(23.0, 23.0);
-        serButton.setOnAction(actionEvent -> {
-            controller.onclick_search(enterBox, webtable, rootdir);
-        });
+        serButton.setOnAction(actionEvent -> controller.onclick_search(enterBox, webtable, rootdir, histroySave));
 
         pane.getChildren().addAll(enterBox, serButton);
 
@@ -317,9 +342,7 @@ public class mainui extends Application {
             histroySave.getSaveo().setCloseForm(1);
             histroySave.reflushJson();
         }
-        openItem.addActionListener(e -> {
-            Platform.runLater(stage::show);
-        });
+        openItem.addActionListener(e -> Platform.runLater(stage::show));
         closeItem.addActionListener(e -> {
             histroySave.getSaveo().setPlayingMusicUri(playList.getcurrMusic());
             histroySave.reflushJson();
@@ -330,7 +353,9 @@ public class mainui extends Application {
 
         //controllerBox
         Button closeButton = new Button();
-        closeButton.setPrefSize(25.0, 23.0);
+        closeButton.setId("closeButton");
+        closeButton.setLayoutX(950);
+        closeButton.setLayoutY(15);
         ImageView closeIm = new ImageView(new Image(new FileInputStream(rootdir + "img/close.png")));
         closeIm.setFitHeight(15.0);
         closeIm.setFitWidth(15.0);
@@ -348,20 +373,16 @@ public class mainui extends Application {
         });
 
         Button minButton = new Button();
+        minButton.setId("minButton");
+        minButton.setLayoutX(895);
+        minButton.setLayoutY(15);
         ImageView minIm = new ImageView(new Image(new FileInputStream(rootdir + "img/minus.png")));
         minIm.setFitHeight(15.0);
         minIm.setFitWidth(15.0);
         minButton.setGraphic(minIm);
-        minButton.setPrefSize(25.0, 23.0);
         minButton.setOnAction(actionEvent -> stage.setIconified(true));
 
-        HBox gencolHBox = new HBox();
-        gencolHBox.setLayoutX(660.0);
-        gencolHBox.setLayoutY(14.0);
-        gencolHBox.setPrefSize(63.0, 23.0);
-        gencolHBox.setSpacing(13.0);
-        gencolHBox.getChildren().addAll(minButton, closeButton);
-        pane.getChildren().add(gencolHBox);
+        pane.getChildren().addAll(minButton, closeButton);
 
 
         stage.show();

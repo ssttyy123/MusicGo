@@ -12,17 +12,24 @@ public class HistroySave {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final File savejson = new File("C:/ProgramData/MusicGo/resources/jsonF/save.json");
 
-    public HistroySave() throws IOException {
-        write2Obj();
+    public HistroySave(String rootdir) throws IOException {
+        write2Obj(rootdir);
     }
 
-    private void firstwriteObj() throws IOException {
+    private void firstwriteObj(String rootdir) throws IOException {
         //String downerDir, String playingMusicUri, String localPath, String backgroundPath, int closeForm, int nameForm, int keyMajusculeForm, int searchReForm
-        saveo.initc("D:/MusicGodown", "D:/MusicGodown/test.mp3", List.of("D:/MusicGodown"), "null", 0, 0, 0, 0);
+        saveo.initc("D:/MusicGodown",
+                "D:/MusicGodown/test.mp3",
+                List.of("D:/MusicGodown"),
+                rootdir + "img/Konachan.com-354920sample.jpg",
+                0,
+                0,
+                0,
+                0);
         objectMapper.writeValue(savejson, saveo);
     }
 
-    private void write2Obj() throws IOException {
+    private void write2Obj(String rootdir) throws IOException {
         if(savejson.exists()){
             try{saveo = objectMapper.readValue(savejson, SaveJson.class);}
             catch (java.io.IOException e){
@@ -30,15 +37,15 @@ public class HistroySave {
                     fileWriter.write("");
                     fileWriter.flush();
                 }
-                firstwriteObj();
-                write2Obj();
+                firstwriteObj(rootdir);
+                write2Obj(rootdir);
 
             }
         }
         else {
             if(savejson.createNewFile()) {
                 saveo = new SaveJson();
-                firstwriteObj();
+                firstwriteObj(rootdir);
             }
             else {
                 System.out.println("操作错误:json文件被未知操作删除");

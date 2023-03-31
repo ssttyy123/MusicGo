@@ -1,13 +1,11 @@
 package com.stary.musicgo;
 
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.*;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 
 import java.io.File;
@@ -19,34 +17,41 @@ public class AudioPlayer {
     private Media media;
     private MediaPlayer mediaPlayer;
     private double wholeTime;
-    private final Label startLabel = new Label();
-    private final Label endLabel = new Label();
+    private final Label startLabel = new Label("--:--");
+    private final Label endLabel = new Label("--:--");
     private final Slider playSlider = new Slider();
 
     public AudioPlayer(File defaultUri){
         media = new Media(defaultUri.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
 
-        startLabel.setLayoutX(30.0);
-        startLabel.setLayoutY(380.0);
-        endLabel.setLayoutX(680.0);
-        endLabel.setLayoutY(380.0);
-        playSlider.setPrefSize(580.0, 14.000);
-        playSlider.setLayoutX(80.0);
-        playSlider.setLayoutY(380.0);
+        startLabel.setLayoutX(110);
+        startLabel.setLayoutY(580);
+        startLabel.setId("startLabel");
+        endLabel.setLayoutX(860);
+        endLabel.setLayoutY(580);
+        endLabel.setId("endLabel");
+        playSlider.setLayoutX(150);
+        playSlider.setLayoutY(580);
+        playSlider.setId("playSlider");
 
-        playSlider.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                mouseOn = true;
-            }
+        playSlider.setOnMousePressed(event -> mouseOn = true);
+        playSlider.setOnMouseReleased(event -> {
+            mediaPlayer.seek(Duration.seconds(playSlider.getValue()));
+            mouseOn = false;
         });
-        playSlider.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                mediaPlayer.seek(Duration.seconds(playSlider.getValue()));
-                mouseOn = false;
-            }
+        mediaPlayer.setOnReady(() -> {
+            playSlider.setValue(0);
+            playSlider.setMin(0);
+            playSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
+            wholeTime = mediaPlayer.getTotalDuration().toSeconds();
+            mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+                if(!mouseOn){
+                    playSlider.setValue(newValue.toSeconds());
+                }
+                startLabel.setText(formatTime(newValue.toSeconds()));
+                endLabel.setText((formatTime(wholeTime - newValue.toSeconds())));
+            });
         });
     }
 
@@ -64,6 +69,8 @@ public class AudioPlayer {
 
     public void changeAudioRes(File curi){
         destroyMedia();
+        startLabel.setText("--:--");
+        endLabel.setText("--:--");
         media = new Media(curi.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
     }
@@ -87,6 +94,10 @@ public class AudioPlayer {
 
     public void stop(){
         mediaPlayer.stop();
+    }
+
+    public void pause(){
+        mediaPlayer.pause();
     }
 
     private void destroyMedia(){

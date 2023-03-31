@@ -12,30 +12,28 @@ import javafx.stage.Stage;
 
 public class DownUI {
     private final Stage stage = new Stage();
-    private final AnchorPane anchorPane = new AnchorPane();
-    private final Label URLLabel = new Label("URL:");
     private final Label URLS = new Label();
-    private final Label filenameLabel = new Label("文件名:");
     private final TextField filenameTextField = new TextField();
-    private final Label singerLabel = new Label("演唱者:");
     private final TextField singerTextField = new TextField();
     private final Button currBut = new Button("确定");
     private final Button closeBut = new Button("取消");
-    private final Scene scene = new Scene(anchorPane);
 
     public DownUI(){
+        Label URLLabel = new Label("URL:");
         URLLabel.setLayoutX(22.0);
         URLLabel.setLayoutY(15.0);
         URLS.setLayoutX(80.0);
         URLS.setLayoutY(15.0);
         URLS.setPrefSize(260.0, 15.0);
 
+        Label filenameLabel = new Label("文件名:");
         filenameLabel.setLayoutX(22.0);
         filenameLabel.setLayoutY(50.0);
         filenameTextField.setLayoutX(80.0);
         filenameTextField.setLayoutY(50.0);
         filenameTextField.setPrefWidth(260.0);
 
+        Label singerLabel = new Label("演唱者:");
         singerLabel.setLayoutX(22.0);
         singerLabel.setLayoutY(95.0);
         singerTextField.setLayoutX(80.0);
@@ -47,8 +45,10 @@ public class DownUI {
         closeBut.setLayoutX(284.0);
         closeBut.setLayoutY(148.0);
 
+        AnchorPane anchorPane = new AnchorPane();
         anchorPane.setPrefSize(380.0, 200.0);
         anchorPane.getChildren().addAll(URLLabel, URLS, filenameLabel, filenameTextField, singerLabel, singerTextField, currBut, closeBut);
+        Scene scene = new Scene(anchorPane);
         stage.setScene(scene);
     }
 
@@ -63,9 +63,7 @@ public class DownUI {
                 tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
             }).start();
         });
-        closeBut.setOnAction(event -> {
-            stage.hide();
-        });
+        closeBut.setOnAction(event -> stage.hide());
     }
 
     public void show(){

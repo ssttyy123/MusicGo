@@ -4,12 +4,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class SettingStage {
@@ -75,7 +80,7 @@ public class SettingStage {
     private final Stage stage = new Stage();
 
 
-    public void init(HistroySave histroySave, PlayList playList, TableView<ListFileCell> tableView){
+    public void init(HistroySave histroySave, PlayList playList, TableView<ListFileCell> tableView, AnchorPane pane, String rootdir){
         //常规
         localLabel.setLayoutX(22.0);
         localLabel.setLayoutY(15.0);
@@ -87,6 +92,13 @@ public class SettingStage {
         localBut.setLayoutX(272.0);
         localBut.setLayoutY(35.0);
         localBut.setPrefSize(25.0, 25.0);
+        try{
+            ImageView localFileIm = new ImageView(new Image(new FileInputStream(rootdir + "img/folderOpen.png")));
+            localBut.setGraphic(localFileIm);
+        }
+        catch (FileNotFoundException e){
+            System.out.println("图片文件缺失");
+        }
         localBut.setOnAction(event -> {
             directoryChooser.setTitle("请选择本地文件夹");
             histroySave.getSaveo().addLocalPath(directoryChooser.showDialog(stage).getAbsolutePath());
@@ -134,6 +146,13 @@ public class SettingStage {
         downBut.setPrefSize(25.0, 25.0);
         downBut.setLayoutX(272.0);
         downBut.setLayoutY(35.0);
+        try{
+            ImageView downFileIm = new ImageView(new Image(new FileInputStream(rootdir + "img/folderOpen.png")));
+            downBut.setGraphic(downFileIm);
+        }
+        catch (FileNotFoundException e){
+            System.out.println("图片文件缺失");
+        }
         downBut.setOnAction(event -> {
             directoryChooser.setTitle("请选择下载文件夹");
             histroySave.getSaveo().setDownerDir(directoryChooser.showDialog(stage).getAbsolutePath());
@@ -174,7 +193,17 @@ public class SettingStage {
         keyMajusculeLabel.setLayoutY(15.0);
         keyMajusculeCheckBox.setLayoutX(29.0);
         keyMajusculeCheckBox.setLayoutY(35.0);
-        //区分大小写
+        //不区分/区分 0/1
+        keyMajusculeCheckBox.setSelected(histroySave.getSaveo().getKeyMajusculeForm() != 0);
+        keyMajusculeCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                histroySave.getSaveo().setKeyMajusculeForm(1);
+            }
+            else {
+                histroySave.getSaveo().setKeyMajusculeForm(0);
+            }
+            histroySave.reflushJson();
+        });
 
         searchReLabel.setLayoutX(22.0);
         searchReLabel.setLayoutY(70.0);
@@ -187,6 +216,29 @@ public class SettingStage {
         searchRe_generic.setLayoutX(29.0);
         searchRe_generic.setLayoutY(130.0);
         searchRe_generic.setToggleGroup(searchhReGroup);
+        if (histroySave.getSaveo().getSearchReForm() == 0){
+            searchRe_complete.setSelected(true);
+        }
+        if (histroySave.getSaveo().getSearchReForm() == 1){
+            searchRe_part.setSelected(true);
+        }
+        else {
+            searchRe_generic.setSelected(true);
+        }
+        //完全匹配/部分匹配/泛型匹配 0/1/2
+        searchhReGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            RadioButton radioButton = (RadioButton) newValue;
+            if(radioButton.getText().equals("完全匹配")){
+                histroySave.getSaveo().setSearchReForm(0);
+            }
+            if(radioButton.getText().equals("部分匹配")){
+                histroySave.getSaveo().setSearchReForm(1);
+            }
+            if (radioButton.getText().equals("泛型匹配")){
+                histroySave.getSaveo().setSearchReForm(2);
+            }
+            histroySave.reflushJson();
+        });
 
         searchPane.setPrefSize(220.0, 180.0);
         searchPane.getChildren().addAll(keyMajusculeLabel, keyMajusculeCheckBox, searchReLabel, searchRe_complete, searchRe_part, searchRe_generic);
@@ -202,11 +254,31 @@ public class SettingStage {
         backgroundBut.setPrefSize(25.0, 25.0);
         backgroundBut.setLayoutX(272.0);
         backgroundBut.setLayoutY(35.0);
+        try{
+            ImageView backgroundFileIm = new ImageView(new Image(new FileInputStream(rootdir + "img/folderOpen.png")));
+            backgroundBut.setGraphic(backgroundFileIm);
+        }
+        catch (FileNotFoundException e){
+            System.out.println("图片文件缺失");
+        }
         backgroundBut.setOnAction(event -> {
             fileChooser.setTitle("请选择背景");
             histroySave.getSaveo().setBackgroundPath(fileChooser.showOpenDialog(stage).getAbsolutePath());
             histroySave.reflushJson();
             backgroundPath.setText(histroySave.getSaveo().getBackgroundPath());
+            Image paneImage = new Image(new File(histroySave.getSaveo().getBackgroundPath()).toURI().toString());
+            BackgroundSize panesize = new BackgroundSize(BackgroundSize.AUTO,
+                    BackgroundSize.AUTO,
+                    false,
+                    false,
+                    true,
+                    true);
+            BackgroundImage backgroundImage = new BackgroundImage(paneImage,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    panesize);
+            pane.setBackground(new Background(backgroundImage));
         });
 
         aboutLabel.setLayoutX(22.0);
@@ -222,7 +294,10 @@ public class SettingStage {
         otherPane.getChildren().addAll(backgroundLabel, backgroundPath, backgroundBut, aboutLabel, UIdesigner, APPdesigner);
         otherTab.setContent(otherPane);
 
-
+        commontTab.setClosable(false);
+        downTab.setClosable(false);
+        searchTab.setClosable(false);
+        otherTab.setClosable(false);
         tabPane.setPrefSize(600.0, 400.0);
         tabPane.getTabs().addAll(commontTab, downTab, searchTab, otherTab);
         stage.initModality(Modality.APPLICATION_MODAL);

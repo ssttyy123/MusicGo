@@ -14,15 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Controller{
-    public void onclick_search(TextField enterBox, TableView<ListFileCell> tableView, String rootdir) {
+    public void onclick_search(TextField enterBox, TableView<ListFileCell> tableView, String rootdir, HistroySave histroySave) {
         new Thread(()->{
             String key = enterBox.getText();
             Downer downer = new Downer("bili");
             File fp = new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json");
-            if(downer.Search(key, fp.getAbsolutePath(), rootdir)){
+            if(downer.Search(key, fp.getAbsolutePath(), rootdir, histroySave)){
                 try{
                     ObservableList<SearchList> orlist = downer.secList();
-                    List<ListFileCell> lists = new ArrayList<ListFileCell>();
+                    List<ListFileCell> lists = new ArrayList<>();
                     for(SearchList i : orlist){
                         lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl()));
                     }
@@ -42,7 +42,7 @@ public class Controller{
             ImageView stopIm = new ImageView(new Image(new FileInputStream(rootdir + "img/play.png")));
             stopIm.setFitHeight(15.0);
             stopIm.setFitWidth(15.0);
-            audioPlayer.stop();
+            audioPlayer.pause();
             playb.setGraphic(stopIm);
         }
         else {
@@ -79,7 +79,9 @@ public class Controller{
             }
             File file = new File(uri);
             if (file.isFile() && file.exists()) {
-                boolean rt = file.delete();
+                if(!file.delete()){
+                    System.out.println("删除文件失败");
+                }
             }
             playList.reFlushList();
             tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
