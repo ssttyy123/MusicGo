@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class Downer {
     private downAPIm dAPI;
-    private String downerform;
+    private final String downerform;
     private final ObjectMapper objectMapper = new ObjectMapper();
     public Downer(String form){
         downerform = form;

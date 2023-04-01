@@ -246,6 +246,9 @@ public class mainui extends Application {
         TableColumn<ListFileCell, String> tcwb_aut = new TableColumn<>("aut");
         tcwb_aut.setCellValueFactory(param -> param.getValue().getAutProperty());
 
+        TableColumn<ListFileCell, String> tcwb_form = new TableColumn<>("form");
+        tcwb_form.setCellValueFactory(param -> param.getValue().getFormProperty());
+
         TableColumn<ListFileCell, String> tcwb_uri = new TableColumn<>();
         tcwb_uri.setCellValueFactory(param -> param.getValue().getNameProperty());
         tcwb_uri.setCellFactory(new Callback<>() {
@@ -275,6 +278,7 @@ public class mainui extends Application {
         });
         webtable.getColumns().add(tcwb_name);
         webtable.getColumns().add(tcwb_aut);
+        webtable.getColumns().add(tcwb_form);
         webtable.getColumns().add(tcwb_uri);
 
 

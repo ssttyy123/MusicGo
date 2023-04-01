@@ -1,5 +1,7 @@
 package com.stary.musicgo;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -16,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SettingStage {
     private final TabPane tabPane = new TabPane();
@@ -64,6 +67,10 @@ public class SettingStage {
     private final RadioButton searchRe_complete = new RadioButton("完全匹配");
     private final RadioButton searchRe_part = new RadioButton("部分匹配");
     private final RadioButton searchRe_generic = new RadioButton("泛型匹配");
+
+    private final Label downFrom = new Label("下载源");
+    private final CheckBox bilibiliCheck = new CheckBox("Bilibili");
+    private final CheckBox wangyicloudCheck = new CheckBox("网易云");
 
     //其他
     private final Tab otherTab = new Tab("其他");
@@ -240,8 +247,39 @@ public class SettingStage {
             histroySave.reflushJson();
         });
 
+        downFrom.setLayoutX(22.0);
+        downFrom.setLayoutY(165.0);
+        bilibiliCheck.setLayoutX(29.0);
+        bilibiliCheck.setLayoutY(185.0);
+        wangyicloudCheck.setLayoutX(29.0);
+        wangyicloudCheck.setLayoutY(205.0);
+        if(histroySave.getSaveo().getBilibiliSearch() == 1) bilibiliCheck.setSelected(true);
+        if(histroySave.getSaveo().getWangyicloudSearch() == 1)wangyicloudCheck.setSelected(true);
+        bilibiliCheck.selectedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                histroySave.getSaveo().setBilibiliSearch(newValue?1:0);
+                histroySave.reflushJson();
+            }
+        });
+        wangyicloudCheck.selectedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                histroySave.getSaveo().setWangyicloudSearch(newValue?1:0);
+                histroySave.reflushJson();
+            }
+        });
+
         searchPane.setPrefSize(220.0, 180.0);
-        searchPane.getChildren().addAll(keyMajusculeLabel, keyMajusculeCheckBox, searchReLabel, searchRe_complete, searchRe_part, searchRe_generic);
+        searchPane.getChildren().addAll(keyMajusculeLabel,
+                keyMajusculeCheckBox,
+                searchReLabel,
+                searchRe_complete,
+                searchRe_part,
+                searchRe_generic,
+                downFrom,
+                bilibiliCheck,
+                wangyicloudCheck);
         searchTab.setContent(searchPane);
 
         //其他

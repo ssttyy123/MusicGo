@@ -22,6 +22,8 @@ public class HistroySave {
                 "D:/MusicGodown/test.mp3",
                 List.of("D:/MusicGodown"),
                 rootdir + "img/Konachan.com-354920sample.jpg",
+                1,
+                1,
                 0,
                 0,
                 0,

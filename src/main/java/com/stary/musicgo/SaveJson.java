@@ -8,6 +8,8 @@ public class SaveJson {
     private String playingMusicUri;//历史播放的音频
     private String backgroundPath;//背景
     private List<String> localPath;//本地储存
+    private int bilibiliSearch;//bilibili搜索源
+    private int wangyicloudSearch;//网易云搜索源
     private int closeForm;//关闭格式
     private int nameForm;//命名格式
     private int keyMajusculeForm;//大小写
@@ -15,10 +17,21 @@ public class SaveJson {
 
     public SaveJson(){}
 
-    public void initc(String downerDir, String playingMusicUri, List<String> localPath, String backgroundPath, int closeForm, int nameForm, int keyMajusculeForm, int searchReForm){
+    public void initc(String downerDir,
+                      String playingMusicUri,
+                      List<String> localPath,
+                      String backgroundPath,
+                      int bilibiliSearch,
+                      int wangyicloudSearch,
+                      int closeForm,
+                      int nameForm,
+                      int keyMajusculeForm,
+                      int searchReForm){
         setDownerDir(downerDir);
         setPlayingMusicUri(playingMusicUri);
         setLocalPath(localPath);
+        setBilibiliSearch(bilibiliSearch);
+        setWangyicloudSearch(wangyicloudSearch);
         setBackgroundPath(backgroundPath);
         setCloseForm(closeForm);
         setNameForm(nameForm);
@@ -40,6 +53,22 @@ public class SaveJson {
 
     public String getPlayingMusicUri(){
         return playingMusicUri;
+    }
+
+    public int getBilibiliSearch(){
+        return bilibiliSearch;
+    }
+
+    public void setBilibiliSearch(int bilibiliSearch){
+        this.bilibiliSearch = bilibiliSearch;
+    }
+
+    public int getWangyicloudSearch(){
+        return wangyicloudSearch;
+    }
+
+    public void setWangyicloudSearch(int wangyicloudSearch){
+        this.wangyicloudSearch = wangyicloudSearch;
     }
 
     public List<String> getLocalPath(){

@@ -18,36 +18,44 @@ public class Controller{
         new Thread(()->{
             String key = enterBox.getText();
             List<ListFileCell> lists = new ArrayList<>();
+            Downer downer = null;
+            File fp = null;
+            int bili = 0;
+            int wangyi = 0;
 
-            Downer downer = new Downer("Bilibili");
-            File fp = new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json");
-            if(downer.Search(key, fp.getAbsolutePath(), rootdir, histroySave)){
-                try{
-                    ObservableList<SearchList> orlist = downer.secList();
-                    for(SearchList i : orlist){
-                        lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl(), i.getForm()));
-                    }
-
-                }
-                catch (IOException e){
-                    System.out.println("loading serlist err");
-                    e.printStackTrace();
-                }
+            if(histroySave.getSaveo().getBilibiliSearch() == 1){
+                bili = 1;
             }
-            downer = new Downer("Wangyicloud");
-            fp = new File("C:/ProgramData/MusicGo/resources/jsonF/wangyicloudsearch.json");
-            if(downer.Search(key, fp.getAbsolutePath(), rootdir, histroySave)){
-                try{
-                    ObservableList<SearchList> orlist = downer.secList();
-                    for(SearchList i : orlist){
-                        lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl(), i.getForm()));
-                    }
+            if (histroySave.getSaveo().getWangyicloudSearch() == 1){
+                wangyi = 1;
+            }
+            while (bili+wangyi>0){
+                if(bili == 1){
+                    System.out.println("bili");
+                    downer = new Downer("Bilibili");
+                    fp = new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json");
+                    bili = 0;
+                }
+                else if (wangyi == 1) {
+                    System.out.println("wang");
+                    downer = new Downer("Wangyicloud");
+                    fp = new File("C:/ProgramData/MusicGo/resources/jsonF/wangyicloudsearch.json");
+                    wangyi = 0;
+                }
+                if(downer.Search(key, fp.getAbsolutePath(), rootdir, histroySave)){
+                    try{
+                        ObservableList<SearchList> orlist = downer.secList();
+                        for(SearchList i : orlist){
+                            lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl(), i.getForm()));
+                        }
 
+                    }
+                    catch (IOException e){
+                        System.out.println("loading serlist err");
+                        e.printStackTrace();
+                    }
                 }
-                catch (IOException e){
-                    System.out.println("loading serlist err");
-                    e.printStackTrace();
-                }
+                System.out.println("aa");
             }
             tableView.setItems(FXCollections.observableList(lists));
         }).start();
