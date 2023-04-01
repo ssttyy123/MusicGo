@@ -106,19 +106,25 @@ public class PlayList {
         for (File i : this.mediaList){
             String name = i.toString().substring(i.toString().lastIndexOf("\\")+1, i.toString().lastIndexOf("."));
             String aut;
+            String form;
             try {
                 Mp3File mp3File = new Mp3File(i);
                 ID3v2 idtag = mp3File.getId3v2Tag();
                 aut = idtag.getArtist();
+                form = idtag.getPublisher();
                 if(aut == null){
                     aut = "佚名";
+                }
+                if(form == null){
+                    form = "null";
                 }
             }
             catch (UnsupportedTagException | InvalidDataException | NullPointerException | IOException e){
                 aut = "佚名";
+                form = "null";
             }
             String uri = i.toString();
-            files.add(new ListFileCell(name, aut, uri));
+            files.add(new ListFileCell(name, aut, uri, form));
         }
         //for(LocalFile i : files)System.out.println(i.toString());
 

@@ -52,7 +52,14 @@ public class DownUI {
         stage.setScene(scene);
     }
 
-    public void init(String url, String dir, String name, String aut, PlayList playList, String rootdir, Downer downer, TableView<ListFileCell> tableView){
+    public void init(String url,
+                     String dir,
+                     String name,
+                     String aut,
+                     PlayList playList,
+                     String rootdir,
+                     Downer downer,
+                     TableView<ListFileCell> tableView){
         URLS.setText(url);
         filenameTextField.setText(name);
         singerTextField.setText(aut);

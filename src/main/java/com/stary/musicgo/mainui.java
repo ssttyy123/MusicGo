@@ -262,11 +262,10 @@ public class mainui extends Application {
                             this.setGraphic(button);
                             button.setOnAction(event -> {
                                 System.out.println(param.getTableView().getItems().get(this.getIndex()).getUri());
-                                //String url, String dir, String name, String aut, PlayList playList
                                 controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(),
                                         histroySave.getSaveo().getDownerDir(),
                                         item, param.getTableView().getItems().get(this.getIndex()).getAut(),
-                                        playList, localtable, rootdir, downUI);
+                                        playList, localtable, rootdir, downUI, param.getTableView().getItems().get(this.getIndex()).getForm());
                             });
                         }
 
@@ -383,7 +382,6 @@ public class mainui extends Application {
         minButton.setOnAction(actionEvent -> stage.setIconified(true));
 
         pane.getChildren().addAll(minButton, closeButton);
-
 
         stage.show();
 

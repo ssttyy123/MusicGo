@@ -10,19 +10,29 @@ import javafx.scene.control.TableView;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class Downer {
-    private String downerForm;
     private downAPIm dAPI;
+    private String downerform;
     private final ObjectMapper objectMapper = new ObjectMapper();
     public Downer(String form){
-        this.downerForm = form;
-        if(form.equals("bili")){
+        downerform = form;
+        if(form.equals("Bilibili")){
             dAPI = new BilibiliDowner();
+        } else if (form.equals("Wangyicloud")) {
+            dAPI = new WangyicloudDowner();
         }
     }
 
-    public void sureDown(String url, String dir, String name, String aut, PlayList playList, String rootdir, DownUI downUI, TableView<ListFileCell> tableView){
+    public void sureDown(String url,
+                         String dir,
+                         String name,
+                         String aut,
+                         PlayList playList,
+                         String rootdir,
+                         DownUI downUI,
+                         TableView<ListFileCell> tableView){
         downUI.init(url, dir, name, aut, playList, rootdir, this, tableView);
         downUI.show();
     }
@@ -39,6 +49,13 @@ public class Downer {
     }
 
     public ObservableList<SearchList> secList() throws IOException {
-        return FXCollections.observableList(objectMapper.readValue(new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json"), new TypeReference<List<SearchList>>(){}));
+        if(Objects.equals(downerform, "Wangyicloud")){
+            return FXCollections.observableList(objectMapper.readValue(new File("C:/ProgramData/MusicGo/resources/jsonF/wangyicloudsearch.json"), new TypeReference<List<SearchList>>(){}));
+
+        }
+        else if(Objects.equals(downerform, "Bilibili")){
+            return FXCollections.observableList(objectMapper.readValue(new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json"), new TypeReference<List<SearchList>>(){}));
+        }
+        return null;
     }
 }

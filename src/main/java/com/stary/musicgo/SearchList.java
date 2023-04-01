@@ -4,6 +4,7 @@ public class SearchList {
     private String name;
     private String aut;
     private String url;
+    private String form;
 
     public String getAut() {
         return aut;
@@ -17,6 +18,10 @@ public class SearchList {
         return url;
     }
 
+    public String getForm(){
+        return form;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -27,5 +32,9 @@ public class SearchList {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public void setForm(String form){
+        this.form = form;
     }
 }

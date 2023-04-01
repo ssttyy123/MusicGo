@@ -17,22 +17,39 @@ public class Controller{
     public void onclick_search(TextField enterBox, TableView<ListFileCell> tableView, String rootdir, HistroySave histroySave) {
         new Thread(()->{
             String key = enterBox.getText();
-            Downer downer = new Downer("bili");
+            List<ListFileCell> lists = new ArrayList<>();
+
+            Downer downer = new Downer("Bilibili");
             File fp = new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json");
             if(downer.Search(key, fp.getAbsolutePath(), rootdir, histroySave)){
                 try{
                     ObservableList<SearchList> orlist = downer.secList();
-                    List<ListFileCell> lists = new ArrayList<>();
                     for(SearchList i : orlist){
-                        lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl()));
+                        lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl(), i.getForm()));
                     }
-                    tableView.setItems(FXCollections.observableList(lists));
+
                 }
                 catch (IOException e){
                     System.out.println("loading serlist err");
                     e.printStackTrace();
                 }
             }
+            downer = new Downer("Wangyicloud");
+            fp = new File("C:/ProgramData/MusicGo/resources/jsonF/wangyicloudsearch.json");
+            if(downer.Search(key, fp.getAbsolutePath(), rootdir, histroySave)){
+                try{
+                    ObservableList<SearchList> orlist = downer.secList();
+                    for(SearchList i : orlist){
+                        lists.add(new ListFileCell(i.getName(), i.getAut(), i.getUrl(), i.getForm()));
+                    }
+
+                }
+                catch (IOException e){
+                    System.out.println("loading serlist err");
+                    e.printStackTrace();
+                }
+            }
+            tableView.setItems(FXCollections.observableList(lists));
         }).start();
     }
 
@@ -67,8 +84,17 @@ public class Controller{
         }
     }
 
-    public void onclick_down(String url, String dir, String name, String aut, PlayList playList, TableView<ListFileCell> tableView, String rootdir, DownUI downUI){
-            Downer downer = new Downer("bili");
+    public void onclick_down(String url,
+                             String dir,
+                             String name,
+                             String aut,
+                             PlayList playList,
+                             TableView<ListFileCell> tableView,
+                             String rootdir,
+                             DownUI downUI,
+                             String form){
+        System.out.println(form);
+            Downer downer = new Downer(form);
             downer.sureDown(url, dir, name, aut, playList, rootdir, downUI, tableView);
     }
 
