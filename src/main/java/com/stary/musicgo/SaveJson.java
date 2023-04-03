@@ -81,7 +81,13 @@ public class SaveJson {
 
     public void addLocalPath(String localPath){
         ArrayList<String> temp = new ArrayList<>(this.localPath);
-        temp.add(localPath);
+        if(!temp.contains(localPath.replace("/", "\\"))) temp.add(localPath);
+        this.localPath = temp;
+    }
+
+    public void deleteLocalPath(String localPath){
+        ArrayList<String> temp = new ArrayList<>(this.localPath);
+        temp.remove(localPath);
         this.localPath = temp;
     }
 

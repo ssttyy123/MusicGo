@@ -45,6 +45,7 @@ public class Downer {
     }
 
     public boolean Search(String key, String jsonpath, String rootdir, HistroySave histroySave){
+        if(Objects.equals(key, "")) return false;
         return dAPI.Search(key, jsonpath, rootdir, histroySave);
     }
 

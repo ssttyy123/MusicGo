@@ -3,10 +3,10 @@ package com.stary.musicgo;
 import javafx.beans.property.*;
 
 public class ListFileCell {
-    private SimpleStringProperty name = new SimpleStringProperty();
-    private SimpleStringProperty aut = new SimpleStringProperty();
-    private SimpleStringProperty uri = new SimpleStringProperty();
-    private SimpleStringProperty form = new SimpleStringProperty();
+    private final SimpleStringProperty name = new SimpleStringProperty();
+    private final SimpleStringProperty aut = new SimpleStringProperty();
+    private final SimpleStringProperty uri = new SimpleStringProperty();
+    private final SimpleStringProperty form = new SimpleStringProperty();
 
     public ListFileCell(String name, String aut, String uri, String form){
         this.name.set(name);
@@ -16,7 +16,7 @@ public class ListFileCell {
     }
 
     public void setName(String name){
-        this.setName(name);
+        this.name.set(name);
     }
 
     public String getName(){

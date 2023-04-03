@@ -30,11 +30,10 @@ public class PlayList {
     public void init(ArrayList<String> dirURI){
         dirSave = dirURI;
         mediaList = new ArrayList<>();
+        this.musicdir = new ArrayList<>();
         try{
             for(String i : dirURI){
-                if(!musicdir.contains(new File(i))){
-                    this.musicdir.add(new File(i));
-                }
+                this.musicdir.add(new File(i));
             }
             for(File i : musicdir){
                 this.mediaList.addAll(List.of(Objects.requireNonNull(i.listFiles())));

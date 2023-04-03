@@ -1,8 +1,7 @@
 package com.stary.musicgo;
 
-import java.io.*;
-import java.lang.*;
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
 
 public class BilibiliDowner implements downAPIm{
     //https://www.bilibili.com/video/BV1sx411A778/ D:/BilibiliDown/ music

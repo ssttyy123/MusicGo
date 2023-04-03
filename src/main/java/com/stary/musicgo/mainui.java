@@ -27,8 +27,57 @@ public class mainui extends Application {
     private double _stg2mosy = 0.0;
     private String rootdir;
 
+    public boolean initexe(){
+        //C:\ProgramData\MusicGo
+        File dataDir = new File("C:\\ProgramData\\MusicGo");
+        //D:/project/java/MusicGo/out/artifacts/MusicGo_jar/
+        File roottxt = new File("C:\\ProgramData\\MusicGo\\resources\\init.txt");
+        File mydir = new File("");
+        if(!dataDir.exists()){
+            if(!dataDir.mkdir()){
+                return false;
+            }
+        }
+
+        dataDir = new File("C:\\ProgramData\\MusicGo\\resources");
+        if(!dataDir.exists()){
+            if(!dataDir.mkdir()){
+                return false;
+            }
+        }
+
+        dataDir = new File("C:\\ProgramData\\MusicGo\\resources\\jsonF");
+        if(!dataDir.exists()){
+            if(!dataDir.mkdir()){
+                return false;
+            }
+        }
+
+        boolean rt = false;
+        if(!roottxt.exists()){
+            try{
+                rt = roottxt.createNewFile();
+                if(!rt){
+                    System.out.println("创建初始化文件失败");
+                    return false;
+                }
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(roottxt, false));
+                String putintxt = mydir.getAbsolutePath().replace("\\", "/") + "/";
+                bufferedWriter.write(putintxt);
+                bufferedWriter.close();
+            }
+            catch (IOException e){
+                System.out.println("创建初始化文件失败");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
+        this.initexe();
         Platform.setImplicitExit(false);
         try{
          rootdir = Files.readString(new File("C:/ProgramData/MusicGo/resources/init.txt").toPath());
@@ -263,13 +312,10 @@ public class mainui extends Application {
 
                         if (item != null && !empty) {
                             this.setGraphic(button);
-                            button.setOnAction(event -> {
-                                System.out.println(param.getTableView().getItems().get(this.getIndex()).getUri());
-                                controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(),
-                                        histroySave.getSaveo().getDownerDir(),
-                                        item, param.getTableView().getItems().get(this.getIndex()).getAut(),
-                                        playList, localtable, rootdir, downUI, param.getTableView().getItems().get(this.getIndex()).getForm());
-                            });
+                            button.setOnAction(event -> controller.onclick_down(param.getTableView().getItems().get(this.getIndex()).getUri(),
+                                    histroySave.getSaveo().getDownerDir(),
+                                    item, param.getTableView().getItems().get(this.getIndex()).getAut(),
+                                    playList, localtable, rootdir, downUI, param.getTableView().getItems().get(this.getIndex()).getForm()));
                         }
 
                     }

@@ -31,13 +31,11 @@ public class Controller{
             }
             while (bili+wangyi>0){
                 if(bili == 1){
-                    System.out.println("bili");
                     downer = new Downer("Bilibili");
                     fp = new File("C:/ProgramData/MusicGo/resources/jsonF/bilisearch.json");
                     bili = 0;
                 }
                 else if (wangyi == 1) {
-                    System.out.println("wang");
                     downer = new Downer("Wangyicloud");
                     fp = new File("C:/ProgramData/MusicGo/resources/jsonF/wangyicloudsearch.json");
                     wangyi = 0;
@@ -55,7 +53,6 @@ public class Controller{
                         e.printStackTrace();
                     }
                 }
-                System.out.println("aa");
             }
             tableView.setItems(FXCollections.observableList(lists));
         }).start();
@@ -101,7 +98,6 @@ public class Controller{
                              String rootdir,
                              DownUI downUI,
                              String form){
-        System.out.println(form);
             Downer downer = new Downer(form);
             downer.sureDown(url, dir, name, aut, playList, rootdir, downUI, tableView);
     }

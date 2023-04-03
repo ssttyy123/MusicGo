@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class SettingStage {
     private final TabPane tabPane = new TabPane();
@@ -34,6 +33,7 @@ public class SettingStage {
     private final ListView<String> localPathList = new ListView<>();
     private final ObservableList<String> observableList = FXCollections.observableArrayList("D:/MusicGodown");
     private final Button localBut = new Button();
+    private final Button deleteBut = new Button();
 
     private final Label closeLabel = new Label("关闭主面板：");
     private final ToggleGroup closeGroup = new ToggleGroup();
@@ -107,13 +107,36 @@ public class SettingStage {
             System.out.println("图片文件缺失");
         }
         localBut.setOnAction(event -> {
-            directoryChooser.setTitle("请选择本地文件夹");
-            histroySave.getSaveo().addLocalPath(directoryChooser.showDialog(stage).getAbsolutePath());
+            try{
+                directoryChooser.setTitle("请选择本地文件夹");
+                histroySave.getSaveo().addLocalPath(directoryChooser.showDialog(stage).getAbsolutePath());
+                histroySave.reflushJson();
+                playList.init(new ArrayList<>(histroySave.getSaveo().getLocalPath()));
+                observableList.setAll(histroySave.getSaveo().getLocalPath());
+                tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
+            }
+            catch (NullPointerException e){
+                System.out.println("未选中");
+            }
+        });
+        deleteBut.setLayoutX(305.0);
+        deleteBut.setLayoutY(35.0);
+        deleteBut.setPrefSize(25.0, 25.0);
+        try{
+            ImageView localFileIm = new ImageView(new Image(new FileInputStream(rootdir + "img/delete.png")));
+            deleteBut.setGraphic(localFileIm);
+        }
+        catch (FileNotFoundException e){
+            System.out.println("图片文件缺失");
+        }
+        deleteBut.setOnAction(event -> {
+            histroySave.getSaveo().deleteLocalPath(localPathList.getSelectionModel().getSelectedItem());
             histroySave.reflushJson();
             playList.init(new ArrayList<>(histroySave.getSaveo().getLocalPath()));
             observableList.setAll(histroySave.getSaveo().getLocalPath());
             tableView.setItems(FXCollections.observableArrayList(playList.getFileList()));
         });
+
 
         closeLabel.setLayoutX(22.0);
         closeLabel.setLayoutY(70.0);
@@ -140,7 +163,7 @@ public class SettingStage {
         });
 
         commontPane.setPrefSize(200.0, 180.0);
-        commontPane.getChildren().addAll(localLabel, localPathList, localBut, closeLabel, closeBut_tohide, closeBut_close);
+        commontPane.getChildren().addAll(localLabel, localPathList, localBut, deleteBut, closeLabel, closeBut_tohide, closeBut_close);
         commontTab.setContent(commontPane);
 
         //下载
@@ -229,7 +252,7 @@ public class SettingStage {
         if (histroySave.getSaveo().getSearchReForm() == 1){
             searchRe_part.setSelected(true);
         }
-        else {
+        else if(histroySave.getSaveo().getSearchReForm() == 2){
             searchRe_generic.setSelected(true);
         }
         //完全匹配/部分匹配/泛型匹配 0/1/2
@@ -340,6 +363,7 @@ public class SettingStage {
         tabPane.getTabs().addAll(commontTab, downTab, searchTab, otherTab);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
+        stage.setTitle("设置");
     }
 
     public Stage getStage() {

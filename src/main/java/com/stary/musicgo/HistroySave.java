@@ -18,16 +18,18 @@ public class HistroySave {
 
     private void firstwriteObj(String rootdir) throws IOException {
         //String downerDir, String playingMusicUri, String localPath, String backgroundPath, int closeForm, int nameForm, int keyMajusculeForm, int searchReForm
-        saveo.initc("D:/MusicGodown",
-                "D:/MusicGodown/test.mp3",
-                List.of("D:/MusicGodown"),
+        String ordir = rootdir + "MusicGodown";
+        ordir = ordir.replace("/", "\\");
+        saveo.initc(rootdir + "MusicGodown",
+                rootdir + "MusicGodown/命运交响曲.mp3",
+                List.of(ordir),
                 rootdir + "img/Konachan.com-354920sample.jpg",
                 1,
                 1,
+                1,
                 0,
                 0,
-                0,
-                0);
+                2);
         objectMapper.writeValue(savejson, saveo);
     }
 
