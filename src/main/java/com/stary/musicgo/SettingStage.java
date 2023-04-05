@@ -88,6 +88,8 @@ public class SettingStage {
 
 
     public void init(HistroySave histroySave, PlayList playList, TableView<ListFileCell> tableView, AnchorPane pane, String rootdir){
+        File settingcss = new File(rootdir + "css/settingUI.css");
+        scene.getStylesheets().add(settingcss.toURI().toString());
         //常规
         localLabel.setLayoutX(22.0);
         localLabel.setLayoutY(15.0);

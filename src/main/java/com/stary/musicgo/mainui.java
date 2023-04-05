@@ -27,7 +27,7 @@ public class mainui extends Application {
     private double _stg2mosy = 0.0;
     private String rootdir;
 
-    public boolean initexe(){
+    public void initexe(){
         //C:\ProgramData\MusicGo
         File dataDir = new File("C:\\ProgramData\\MusicGo");
         //D:/project/java/MusicGo/out/artifacts/MusicGo_jar/
@@ -35,21 +35,21 @@ public class mainui extends Application {
         File mydir = new File("");
         if(!dataDir.exists()){
             if(!dataDir.mkdir()){
-                return false;
+                return;
             }
         }
 
         dataDir = new File("C:\\ProgramData\\MusicGo\\resources");
         if(!dataDir.exists()){
             if(!dataDir.mkdir()){
-                return false;
+                return;
             }
         }
 
         dataDir = new File("C:\\ProgramData\\MusicGo\\resources\\jsonF");
         if(!dataDir.exists()){
             if(!dataDir.mkdir()){
-                return false;
+                return;
             }
         }
 
@@ -59,7 +59,7 @@ public class mainui extends Application {
                 rt = roottxt.createNewFile();
                 if(!rt){
                     System.out.println("创建初始化文件失败");
-                    return false;
+                    return;
                 }
                 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(roottxt, false));
                 String putintxt = mydir.getAbsolutePath().replace("\\", "/") + "/";
@@ -68,11 +68,9 @@ public class mainui extends Application {
             }
             catch (IOException e){
                 System.out.println("创建初始化文件失败");
-                return false;
             }
         }
 
-        return true;
     }
 
     @Override
